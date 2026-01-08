@@ -523,9 +523,9 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl">
-        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-white">
           {/* Left Column: Media & Core Info */}
-          <div className="w-full md:w-1/2 bg-cream-light/30 p-8 md:p-12 space-y-8 border-r border-cream-dark/10">
+          <div className="w-full md:w-1/2 bg-cream/20 p-8 md:p-12 space-y-8 border-r border-cream-dark/10">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
