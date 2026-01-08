@@ -405,10 +405,9 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  if (!product) return null;
-
   const addToCartMutation = useMutation({
     mutationFn: async () => {
+      if (!product) return;
       if (isAuthenticated) {
         await apiRequest("POST", "/api/cart", { productId: String(product.id), quantity: 1 });
         return { success: true, localStorage: false };
@@ -437,6 +436,7 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
       return { success: true, localStorage: true };
     },
     onSuccess: (result) => {
+      if (!product) return;
       if (result && !result.localStorage) {
         queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       }
@@ -447,6 +447,7 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
   const addToWishlistMutation = useMutation({
     mutationFn: async () => {
+      if (!product) return;
       if (isAuthenticated) {
         if (isLiked) await apiRequest("DELETE", `/api/wishlist/${product.id}`);
         else await apiRequest("POST", "/api/wishlist", { productId: String(product.id) });
@@ -474,11 +475,14 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
       window.dispatchEvent(new CustomEvent('localWishlistUpdate'));
     },
     onSuccess: () => {
+      if (!product) return;
       queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
       setIsLiked(!isLiked);
       toast({ title: isLiked ? "Removed from wishlist" : "Added to wishlist", description: `${product.name} has been ${isLiked ? "removed from" : "added to"} your wishlist.` });
     }
   });
+
+  if (!product) return null;
 
   const handleBuyNow = () => {
     if (!isAuthenticated) {
