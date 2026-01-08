@@ -522,65 +522,65 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl">
-        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-[#FFFAF5] border-none shadow-2xl rounded-3xl">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto">
           {/* Left Column: Media & Core Info */}
-          <div className="w-full md:w-1/2 bg-cream/20 p-8 md:p-12 space-y-8 border-r border-cream-dark/10">
+          <div className="w-full md:w-1/2 bg-[#F5D7B0]/10 p-8 md:p-12 space-y-8 border-r border-[#E3C7A0]/20">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.4 }}
-              className="relative aspect-square w-full bg-white rounded-3xl p-10 shadow-soft border border-cream-dark/20 flex items-center justify-center overflow-hidden"
+              className="relative aspect-square w-full bg-white rounded-3xl p-10 shadow-sm border border-[#E3C7A0]/20 flex items-center justify-center overflow-hidden"
             >
               <img
                 src={product.imageUrl || product.images?.[0]}
                 alt={product.name}
-                className="w-full h-full object-contain drop-shadow-2xl"
+                className="w-full h-full object-contain drop-shadow-xl"
               />
               <div className="absolute top-6 left-6">
-                <Badge className="bg-espresso text-white border-none font-bold tracking-widest text-[10px] px-3 py-1.5 rounded-full">
+                <Badge className="bg-[#4B3A2F] text-[#F5D7B0] border-none font-bold tracking-widest text-[10px] px-3 py-1.5 rounded-full">
                   {product.subcategory}
                 </Badge>
               </div>
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => addToWishlistMutation.mutate()}
-                className="absolute top-6 right-6 w-12 h-12 rounded-full glass bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
+                className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300"
               >
                 <Heart
-                  className={`h-6 w-6 transition-colors duration-300 ${isLiked ? "fill-rose-500 text-rose-500" : "text-espresso"}`}
+                  className={`h-6 w-6 transition-colors duration-300 ${isLiked ? "fill-[#E11D48] text-[#E11D48]" : "text-[#4B3A2F]"}`}
                 />
               </motion.button>
             </motion.div>
 
             <div className="space-y-6">
-              <div className="flex items-center gap-6 p-6 bg-white rounded-2xl border border-cream-dark/20 shadow-sm">
-                <div className="text-center border-r border-cream-dark/30 pr-6">
-                  <p className="text-4xl font-display font-black text-espresso">{product.rating || "4.8"}</p>
+              <div className="flex items-center gap-6 p-6 bg-white/50 rounded-2xl border border-[#E3C7A0]/20 shadow-sm">
+                <div className="text-center border-r border-[#E3C7A0]/20 pr-6">
+                  <p className="text-4xl font-display font-black text-[#3B2D25]">{product.rating || "4.8"}</p>
                   <div className="flex gap-0.5 mt-1">
                     {[1, 2, 3, 4, 5].map(s => (
-                      <Star key={s} className="h-3 w-3 fill-gold text-gold" />
+                      <Star key={s} className="h-3 w-3 fill-[#8B7355] text-[#8B7355]" />
                     ))}
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-espresso">High Performance</p>
-                  <p className="text-xs text-espresso/60 font-medium">Based on 150+ verified reviews</p>
+                  <p className="text-sm font-bold text-[#3B2D25]">High Performance</p>
+                  <p className="text-xs text-[#4B3A2F]/60 font-medium">Verified pharmaceutical grade</p>
                 </div>
               </div>
 
               {product.careGuide && (
-                <div className="p-6 bg-espresso rounded-3xl text-white shadow-xl relative overflow-hidden group">
+                <div className="p-6 bg-[#4B3A2F] rounded-3xl text-white shadow-xl relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                    <Sparkles className="h-16 w-16 text-gold" />
+                    <Sparkles className="h-16 w-16 text-[#F5D7B0]" />
                   </div>
                   <div className="flex gap-4 items-start relative z-10">
-                    <div className="h-10 w-10 rounded-2xl bg-gold flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="h-5 w-5 text-espresso" />
+                    <div className="h-10 w-10 rounded-2xl bg-[#F5D7B0] flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-5 w-5 text-[#4B3A2F]" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black text-gold uppercase tracking-widest">Expert Tip</p>
+                      <p className="text-[10px] font-black text-[#F5D7B0] uppercase tracking-widest">Expert Tip</p>
                       <p className="text-xs text-white/80 leading-relaxed font-medium italic">{product.careGuide}</p>
                     </div>
                   </div>
@@ -590,20 +590,20 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
           </div>
 
           {/* Right Column: Detailed Tabs & Actions */}
-          <div className="w-full md:w-1/2 flex flex-col h-full bg-white relative">
+          <div className="w-full md:w-1/2 flex flex-col h-full bg-[#FFFAF5] relative">
             <div className="p-8 md:p-12 pb-0 flex-1 overflow-y-auto">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <span className="text-xs font-bold tracking-[0.3em] text-gold-dark uppercase block">
+                  <span className="text-xs font-bold tracking-[0.3em] text-[#8B7355] uppercase block">
                     {product.brand} • {product.category}
                   </span>
-                  <DialogTitle className="text-4xl md:text-5xl font-display font-black text-espresso leading-[1.1] tracking-tight">
+                  <DialogTitle className="text-4xl md:text-5xl font-display font-black text-[#3B2D25] leading-[1.1] tracking-tight">
                     {product.name}
                   </DialogTitle>
                   <div className="flex items-center gap-4 pt-2">
-                    <span className="text-4xl font-bold text-espresso">₹{product.price}</span>
+                    <span className="text-4xl font-bold text-[#4B3A2F]">₹{product.price}</span>
                     {product.originalPrice && (
-                      <span className="text-xl text-espresso/30 line-through font-medium">
+                      <span className="text-xl text-[#4B3A2F]/30 line-through font-medium">
                         ₹{product.originalPrice}
                       </span>
                     )}
@@ -611,82 +611,81 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
                 </div>
 
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="w-full justify-start bg-transparent border-b border-cream-dark/20 h-auto p-0 rounded-none gap-8">
-                    <TabsTrigger value="overview" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Overview</TabsTrigger>
-                    <TabsTrigger value="details" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Specifications</TabsTrigger>
-                    <TabsTrigger value="reviews" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Reviews</TabsTrigger>
-                    <TabsTrigger value="qa" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Q&A</TabsTrigger>
+                  <TabsList className="w-full justify-start bg-transparent border-b border-[#E3C7A0]/20 h-auto p-0 rounded-none gap-8">
+                    <TabsTrigger value="overview" className="bg-transparent border-none text-[#4B3A2F]/40 data-[state=active]:text-[#4B3A2F] data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#8B7355] h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Overview</TabsTrigger>
+                    <TabsTrigger value="details" className="bg-transparent border-none text-[#4B3A2F]/40 data-[state=active]:text-[#4B3A2F] data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#8B7355] h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Specs</TabsTrigger>
+                    <TabsTrigger value="reviews" className="bg-transparent border-none text-[#4B3A2F]/40 data-[state=active]:text-[#4B3A2F] data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#8B7355] h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Reviews</TabsTrigger>
+                    <TabsTrigger value="qa" className="bg-transparent border-none text-[#4B3A2F]/40 data-[state=active]:text-[#4B3A2F] data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#8B7355] h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Q&A</TabsTrigger>
                   </TabsList>
 
-                  <div className="py-8 min-h-[350px]">
+                  <div className="py-8 min-h-[300px]">
                     <TabsContent value="overview" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
                       <div className="space-y-4">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-espresso/40">Product Narrative</h4>
-                        <DialogDescription className="text-espresso/80 leading-relaxed text-lg font-medium">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#4B3A2F]/40">Product Narrative</h4>
+                        <DialogDescription className="text-[#4B3A2F]/80 leading-relaxed text-lg font-medium">
                           {product.description}
                         </DialogDescription>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-cream/20 rounded-2xl border border-cream-dark/10">
-                          <p className="text-[10px] uppercase font-black text-gold-dark mb-1">Texture</p>
-                          <p className="text-sm font-bold text-espresso">{product.specifications?.Texture || "Lightweight Liquid"}</p>
+                        <div className="p-4 bg-[#F5D7B0]/20 rounded-2xl border border-[#E3C7A0]/10">
+                          <p className="text-[10px] uppercase font-black text-[#8B7355] mb-1">Texture</p>
+                          <p className="text-sm font-bold text-[#3B2D25]">{product.specifications?.Texture || "Pharmaceutical Grade"}</p>
                         </div>
-                        <div className="p-4 bg-cream/20 rounded-2xl border border-cream-dark/10">
-                          <p className="text-[10px] uppercase font-black text-gold-dark mb-1">Scent</p>
-                          <p className="text-sm font-bold text-espresso">{product.specifications?.Scent || "Fresh Citrus"}</p>
+                        <div className="p-4 bg-[#F5D7B0]/20 rounded-2xl border border-[#E3C7A0]/10">
+                          <p className="text-[10px] uppercase font-black text-[#8B7355] mb-1">Ethics</p>
+                          <p className="text-sm font-bold text-[#3B2D25]">Dermatologist Tested</p>
                         </div>
                       </div>
                     </TabsContent>
 
                     <TabsContent value="details" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                      <div className="grid grid-cols-1 gap-6">
+                      <div className="grid grid-cols-1 gap-4">
                         {product.specifications && Object.entries(product.specifications).map(([key, value]: [string, any]) => (
-                          <div key={key} className="flex justify-between items-center py-4 border-b border-cream-dark/10">
-                            <span className="text-xs font-bold text-espresso/40 uppercase tracking-widest">{key}</span>
-                            <span className="text-sm font-bold text-espresso">{value}</span>
+                          <div key={key} className="flex justify-between items-center py-3 border-b border-[#E3C7A0]/10">
+                            <span className="text-xs font-bold text-[#4B3A2F]/40 uppercase tracking-widest">{key}</span>
+                            <span className="text-sm font-bold text-[#3B2D25]">{value}</span>
                           </div>
                         ))}
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="reviews" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                      <div className="space-y-4">
-                        {[
-                          { name: "Eleanor S.", rating: 5, date: "Oct 12, 2025", text: "Finally found a serum that actually delivers. My skin feels incredibly hydrated and the glow is undeniable." },
-                          { name: "Marcus T.", rating: 4, date: "Sep 28, 2025", text: "Great texture, absorbs quickly. Not seeing major changes in pigmentation yet but it's only been two weeks." }
-                        ].map((rev, i) => (
-                          <div key={i} className="p-5 rounded-2xl bg-cream/5 border border-cream-dark/10 space-y-3">
-                            <div className="flex justify-between items-center">
-                              <p className="text-sm font-bold text-espresso">{rev.name}</p>
-                              <p className="text-[10px] font-bold text-espresso/40">{rev.date}</p>
-                            </div>
+                    <TabsContent value="reviews" className="mt-0 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-[#4B3A2F]/40">Verified Feedback</h4>
+                        <Button variant="ghost" size="sm" className="text-xs font-bold text-[#8B7355]">Write Review</Button>
+                      </div>
+                      {[
+                        { name: "S. Kapoor", text: "Exceptional clinical results after just 1 week. My skin's moisture barrier is significantly improved.", stars: 5 },
+                        { name: "Dr. Mehta", text: "As a professional, I'm impressed by the ingredient purity and clinical efficacy of this formulation.", stars: 5 }
+                      ].map((rev, i) => (
+                        <div key={i} className="p-4 rounded-2xl bg-white border border-[#E3C7A0]/10 shadow-sm space-y-2">
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs font-bold text-[#3B2D25]">{rev.name}</p>
                             <div className="flex gap-0.5">
-                              {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`h-3 w-3 ${s <= rev.rating ? "fill-gold text-gold" : "text-cream-dark"}`} />)}
+                              {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-2.5 w-2.5 fill-[#8B7355] text-[#8B7355]" />)}
                             </div>
-                            <p className="text-sm text-espresso/70 leading-relaxed font-medium italic">"{rev.text}"</p>
                           </div>
-                        ))}
-                      </div>
+                          <p className="text-xs text-[#4B3A2F]/70 leading-relaxed font-medium italic">"{rev.text}"</p>
+                        </div>
+                      ))}
                     </TabsContent>
 
-                    <TabsContent value="qa" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                      <div className="space-y-4">
-                        {[
-                          { q: "Is this safe for sensitive skin?", a: "Absolutely. Our formulas are dermatologist tested and designed to be gentle yet effective even on sensitive skin types." },
-                          { q: "When should I apply this in my routine?", a: "Apply after cleansing and toning, but before heavier creams and oils. Morning and night for best results." }
-                        ].map((item, i) => (
-                          <div key={i} className="space-y-3 p-5 rounded-2xl bg-espresso/[0.02] border border-cream-dark/10">
-                            <div className="flex gap-3">
-                              <HelpCircle className="h-5 w-5 text-gold-dark flex-shrink-0" />
-                              <p className="text-sm font-bold text-espresso">{item.q}</p>
-                            </div>
-                            <div className="flex gap-3 pt-2">
-                              <MessageCircle className="h-5 w-5 text-espresso/20 flex-shrink-0" />
-                              <p className="text-sm text-espresso/60 font-medium leading-relaxed">{item.a}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                    <TabsContent value="qa" className="mt-0 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#4B3A2F]/40 mb-4">Common Inquiries</h4>
+                      {[
+                        { q: "Is this suitable for post-procedure skin?", a: "Yes, our gentle formulation is designed to soothe and repair, making it ideal for recovery." },
+                        { q: "Does it contain artificial fragrances?", a: "No. Liminara products are 100% free from synthetic fragrances and harmful additives." }
+                      ].map((item, i) => (
+                        <div key={i} className="space-y-2 p-4 rounded-2xl bg-white border border-[#E3C7A0]/10 shadow-sm">
+                          <p className="text-xs font-bold text-[#3B2D25] flex gap-2">
+                            <HelpCircle className="h-3.5 w-3.5 text-[#8B7355]" />
+                            {item.q}
+                          </p>
+                          <p className="text-xs text-[#4B3A2F]/60 font-medium leading-relaxed pl-5">
+                            {item.a}
+                          </p>
+                        </div>
+                      ))}
                     </TabsContent>
                   </div>
                 </Tabs>
@@ -694,20 +693,20 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
             </div>
 
             {/* Fixed Footer Actions */}
-            <div className="p-8 md:p-12 pt-8 bg-white border-t border-cream-dark/20 sticky bottom-0 z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+            <div className="p-8 md:p-12 pt-8 bg-white border-t border-[#E3C7A0]/20 sticky bottom-0 z-10">
               <div className="flex flex-wrap gap-4">
                 <Button 
                   size="lg" 
                   onClick={() => addToCartMutation.mutate()}
-                  className="flex-[2] bg-espresso hover:bg-espresso/95 text-white rounded-2xl h-18 text-xl font-black group shadow-2xl transition-all active:scale-[0.98] min-w-[200px]"
+                  className="flex-[2] bg-[#4B3A2F] hover:bg-[#3B2D25] text-[#F5D7B0] rounded-2xl h-16 text-lg font-black group shadow-xl transition-all active:scale-[0.98] min-w-[180px]"
                 >
-                  <ShoppingCart className="mr-4 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                  <ShoppingCart className="mr-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   Add to Collection
                 </Button>
                 <Button 
                   size="lg"
                   onClick={handleBuyNow}
-                  className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-18 text-xl font-black shadow-2xl transition-all active:scale-[0.98] min-w-[150px]"
+                  className="flex-1 bg-[#F5D7B0] hover:bg-[#E3C7A0] text-[#4B3A2F] rounded-2xl h-16 text-lg font-black shadow-xl transition-all active:scale-[0.98] min-w-[140px]"
                 >
                   Buy Now
                 </Button>
