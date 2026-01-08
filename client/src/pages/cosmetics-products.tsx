@@ -422,25 +422,25 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
           </div>
 
           {/* Details Section */}
-          <div className="w-full md:w-1/2 p-6 md:p-12 space-y-8 flex flex-col justify-start">
+          <div className="w-full md:w-1/2 p-6 md:p-12 space-y-8 flex flex-col justify-start bg-espresso text-white">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-[0.2em] text-gold-dark uppercase">
+                <span className="text-xs font-bold tracking-[0.2em] text-gold uppercase">
                   {product.brand} • {product.category}
                 </span>
                 {product.specifications?.["Skin Type"] && (
-                  <Badge variant="outline" className="border-border text-espresso/60 bg-white/50">
+                  <Badge variant="outline" className="border-gold/30 text-gold bg-white/10">
                     {product.specifications["Skin Type"]}
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="text-4xl md:text-5xl font-display font-bold text-espresso leading-[1.1]">
+              <DialogTitle className="text-4xl md:text-5xl font-display font-bold text-white leading-[1.1]">
                 {product.name}
               </DialogTitle>
               <div className="flex items-center gap-4 pt-2">
-                <span className="text-4xl font-bold text-gold-dark">₹{product.price}</span>
+                <span className="text-4xl font-bold text-gold">₹{product.price}</span>
                 {product.originalPrice && (
-                  <span className="text-xl text-muted-foreground line-through opacity-50 font-medium">
+                  <span className="text-xl text-white/50 line-through font-medium">
                     ₹{product.originalPrice}
                   </span>
                 )}
@@ -449,20 +449,20 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-espresso/40">About This Product</h4>
-                <DialogDescription className="text-espresso/80 leading-relaxed text-lg font-medium">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">About This Product</h4>
+                <DialogDescription className="text-white/80 leading-relaxed text-lg font-medium">
                   {product.description}
                 </DialogDescription>
               </div>
 
               {product.specifications && (
-                <div className="grid grid-cols-2 gap-x-8 gap-y-6 pt-6 border-t border-cream-dark/50">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-6 pt-6 border-t border-white/10">
                   {Object.entries(product.specifications)
                     .filter(([key]) => !["Skin Type", "Concern"].includes(key))
                     .map(([key, value]: [string, any]) => (
                     <div key={key} className="space-y-1.5">
-                      <p className="text-[10px] uppercase tracking-[0.15em] text-espresso/40 font-black">{key}</p>
-                      <p className="text-sm font-bold text-espresso">{value}</p>
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-black">{key}</p>
+                      <p className="text-sm font-bold text-white">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -471,23 +471,23 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
             <div className="pt-8 mt-auto space-y-4">
               <div className="flex gap-4">
-                <Button size="lg" className="flex-1 bg-espresso hover:bg-espresso/90 text-white rounded-2xl h-16 text-xl font-bold group shadow-xl">
+                <Button size="lg" className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-16 text-xl font-bold group shadow-xl border-none">
                   Add to Cart
                   <ShoppingCart className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <Button size="icon" variant="outline" className="h-16 w-16 rounded-2xl border-2 border-border hover:border-gold hover:bg-cream transition-all duration-500">
-                  <Heart className="h-7 w-7 text-espresso" />
+                <Button size="icon" variant="outline" className="h-16 w-16 rounded-2xl border-2 border-white/10 hover:border-gold hover:bg-white/5 transition-all duration-500">
+                  <Heart className="h-7 w-7 text-gold" />
                 </Button>
               </div>
               
               {product.careGuide && (
-                <div className="p-5 bg-gold/5 rounded-2xl border border-gold/10 flex gap-4 items-start">
+                <div className="p-5 bg-white/5 rounded-2xl border border-white/10 flex gap-4 items-start">
                   <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-4 w-4 text-gold-dark" />
+                    <Sparkles className="h-4 w-4 text-gold" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gold-dark uppercase tracking-widest">Expert Tip</p>
-                    <p className="text-xs text-espresso/70 leading-relaxed font-medium italic">{product.careGuide}</p>
+                    <p className="text-[10px] font-black text-gold uppercase tracking-widest">Expert Tip</p>
+                    <p className="text-xs text-white/70 leading-relaxed font-medium italic">{product.careGuide}</p>
                   </div>
                 </div>
               )}
