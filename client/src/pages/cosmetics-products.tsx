@@ -13,6 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { InteractiveCard } from "@/components/ui/InteractiveCard";
 import { Slider } from "@/components/ui/slider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import {
   Sparkles,
   Search,
@@ -395,14 +400,119 @@ function PrecisionSidebar({ onChange, onClose }: { onChange?: (filters: any) => 
    Product Detail Modal
 ------------------------------------ */
 function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen: boolean; onClose: () => void }) {
+  const [isLiked, setIsLiked] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   if (!product) return null;
+
+  const addToCartMutation = useMutation({
+    mutationFn: async () => {
+      if (isAuthenticated) {
+        await apiRequest("POST", "/api/cart", { productId: String(product.id), quantity: 1 });
+        return { success: true, localStorage: false };
+      }
+      const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+      const existingItemIndex = localCart.findIndex((item: any) => item.productId === String(product.id));
+      if (existingItemIndex !== -1) {
+        localCart[existingItemIndex].quantity = (localCart[existingItemIndex].quantity || 1) + 1;
+      } else {
+        localCart.push({
+          id: `local-${product.id}-${Date.now()}`,
+          productId: String(product.id),
+          quantity: 1,
+          product: {
+            ...product,
+            id: String(product.id),
+            name: product.name,
+            description: product.description,
+            price: String(product.price),
+            imageUrl: product.imageUrl || product.images?.[0],
+            images: product.images || [product.imageUrl]
+          }
+        });
+      }
+      localStorage.setItem('localCart', JSON.stringify(localCart));
+      return { success: true, localStorage: true };
+    },
+    onSuccess: (result) => {
+      if (result && !result.localStorage) {
+        queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      }
+      window.dispatchEvent(new Event('cartUpdated'));
+      toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
+    }
+  });
+
+  const addToWishlistMutation = useMutation({
+    mutationFn: async () => {
+      if (isAuthenticated) {
+        if (isLiked) await apiRequest("DELETE", `/api/wishlist/${product.id}`);
+        else await apiRequest("POST", "/api/wishlist", { productId: String(product.id) });
+        return;
+      }
+      const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
+      if (isLiked) {
+        const updated = localWishlist.filter((item: any) => item.productId !== String(product.id));
+        localStorage.setItem('localWishlist', JSON.stringify(updated));
+      } else {
+        localWishlist.push({
+          productId: String(product.id),
+          product: {
+            ...product,
+            id: String(product.id),
+            name: product.name,
+            description: product.description,
+            price: String(product.price),
+            imageUrl: product.imageUrl || product.images?.[0],
+            images: product.images || [product.imageUrl]
+          }
+        });
+        localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
+      }
+      window.dispatchEvent(new CustomEvent('localWishlistUpdate'));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      setIsLiked(!isLiked);
+      toast({ title: isLiked ? "Removed from wishlist" : "Added to wishlist", description: `${product.name} has been ${isLiked ? "removed from" : "added to"} your wishlist.` });
+    }
+  });
+
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('checkoutProductId', product.id.toString());
+      navigate('/auth');
+      return;
+    }
+    const item = {
+      productId: String(product.id),
+      quantity: 1,
+      price: product.price,
+      total: product.price,
+      product: {
+        ...product,
+        id: String(product.id),
+        name: product.name,
+        description: product.description,
+        price: String(product.price),
+        imageUrl: product.imageUrl || product.images?.[0],
+        images: product.images || [product.imageUrl]
+      }
+    };
+    sessionStorage.setItem('buyNowItem', JSON.stringify(item));
+    localStorage.setItem('checkoutType', 'direct');
+    localStorage.setItem('buyNowItem', JSON.stringify(item));
+    navigate('/checkout');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl p-0 overflow-hidden bg-warmWhite border-none shadow-2xl rounded-3xl">
         <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-warmWhite">
           {/* Image Section */}
-          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-6 md:p-12">
+          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-6 md:p-12 relative">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -418,6 +528,17 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
                   {product.subcategory}
                 </Badge>
               </div>
+              
+              {/* Like Button moved to image top right corner */}
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => addToWishlistMutation.mutate()}
+                className="absolute top-4 right-4 w-12 h-12 rounded-full glass bg-white/80 backdrop-blur-md flex items-center justify-center shadow-medium hover:shadow-xl transition-all duration-300 z-10"
+              >
+                <Heart
+                  className={`h-6 w-6 transition-colors duration-300 ${isLiked ? "fill-rose-dark text-rose-dark" : "text-espresso"}`}
+                />
+              </motion.button>
             </motion.div>
           </div>
 
@@ -470,13 +591,23 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
             </div>
 
             <div className="pt-8 mt-auto space-y-4">
-              <div className="flex gap-4">
-                <Button size="lg" className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-16 text-xl font-bold group shadow-xl border-none">
+              <div className="flex flex-wrap gap-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => addToCartMutation.mutate()}
+                  className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-16 text-xl font-bold group shadow-xl border-none min-w-[160px]"
+                >
                   Add to Cart
                   <ShoppingCart className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <Button size="icon" variant="outline" className="h-16 w-16 rounded-2xl border-2 border-white/10 hover:border-gold hover:bg-white/5 transition-all duration-500">
-                  <Heart className="h-7 w-7 text-gold" />
+                
+                {/* Buy Now Button added */}
+                <Button 
+                  size="lg"
+                  onClick={handleBuyNow}
+                  className="flex-1 bg-white hover:bg-cream text-espresso rounded-2xl h-16 text-xl font-bold shadow-xl border-none min-w-[160px]"
+                >
+                  Buy Now
                 </Button>
               </div>
               
