@@ -1,11 +1,8 @@
-
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -16,12 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { InteractiveCard } from "@/components/ui/InteractiveCard";
 import { Slider } from "@/components/ui/slider";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { parsePrice } from "@/lib/priceUtils";
-
 import {
   Sparkles,
   Search,
@@ -29,17 +20,13 @@ import {
   ShoppingCart,
   Eye,
   ArrowRight,
-  Shield,
-  Loader2,
-  Filter,
-  X,
   Droplets,
   Flower2,
   Beaker,
-  Star,
+  Filter,
+  X,
 } from "lucide-react";
-
-
+import productsData from "../../../data/products.json";
 
 /* ------------------------------------
    Skin Finder Quiz
@@ -121,8 +108,7 @@ function SkinFinderQuiz({ onComplete }: { onComplete: (filters: any) => void }) 
                 {questions.map((_, i) => (
                   <motion.div
                     key={i}
-                    className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-gold" : "bg-border"
-                      }`}
+                    className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-gold" : "bg-border"}`}
                     initial={i === step ? { scaleX: 0 } : {}}
                     animate={i === step ? { scaleX: 1 } : {}}
                     transition={{ duration: 0.5 }}
@@ -406,533 +392,327 @@ function PrecisionSidebar({ onChange, onClose }: { onChange?: (filters: any) => 
 }
 
 /* ------------------------------------
-   Product Card
+   Product Detail Modal
 ------------------------------------ */
-function ProductCard({ product }: { product: any }) {
-  const [isLiked, setIsLiked] = useState(false);
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const [cartCooldown, setCartCooldown] = useState(false);
-
-  const addToCartMutation = useMutation({
-    mutationFn: async () => {
-      if (isAuthenticated) {
-        await apiRequest("POST", "/api/cart", { productId: String(product.id), quantity: 1 });
-        return { success: true, localStorage: false };
-      }
-      const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
-      const existingItemIndex = localCart.findIndex((item: any) => item.productId === String(product.id));
-      if (existingItemIndex !== -1) {
-        localCart[existingItemIndex].quantity = (localCart[existingItemIndex].quantity || 1) + 1;
-      } else {
-        localCart.push({
-          id: `local-${product.id}-${Date.now()}`,
-          productId: String(product.id),
-          quantity: 1,
-          product: {
-            ...product,
-            id: String(product.id),
-            name: product.name, // Explicit name mapping
-            description: product.benefit, // Map benefit to description for cart display
-            price: String(product.price),
-            imageUrl: product.image, // Map image to imageUrl for CartModal
-            images: [product.image]
-          }
-        });
-      }
-      localStorage.setItem('localCart', JSON.stringify(localCart));
-      return { success: true, localStorage: true };
-    },
-    onSuccess: (result) => {
-      if (result && !result.localStorage) {
-        queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
-      }
-      window.dispatchEvent(new Event('cartUpdated'));
-      setCartCooldown(true);
-      setTimeout(() => setCartCooldown(false), 1000);
-      toast({ title: "Added to cart", description: `${product.name} has been added to your cart.` });
-    },
-    onError: () => toast({ title: "Error", description: "Failed to add item to cart.", variant: "destructive" })
-  });
-
-  const addToWishlistMutation = useMutation({
-    mutationFn: async () => {
-      if (isAuthenticated) {
-        if (isLiked) await apiRequest("DELETE", `/api/wishlist/${product.id}`);
-        else await apiRequest("POST", "/api/wishlist", { productId: String(product.id) });
-        return;
-      }
-      const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
-      if (isLiked) {
-        const updated = localWishlist.filter((item: any) => item.productId !== String(product.id));
-        localStorage.setItem('localWishlist', JSON.stringify(updated));
-      } else {
-        localWishlist.push({
-          productId: String(product.id),
-          product: {
-            ...product,
-            id: String(product.id),
-            name: product.name, // Explicit name mapping
-            description: product.benefit, // Map benefit to description
-            price: String(product.price),
-            imageUrl: product.image, // Map image to imageUrl for WishlistModal
-            images: [product.image]
-          }
-        });
-        localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
-      }
-      window.dispatchEvent(new CustomEvent('localWishlistUpdate'));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
-      window.dispatchEvent(new CustomEvent('localWishlistUpdate'));
-      setIsLiked(!isLiked);
-      toast({ title: isLiked ? "Removed from wishlist" : "Added to wishlist", description: `${product.name} has been ${isLiked ? "removed from" : "added to"} your wishlist.` });
-    }
-  });
-
-  const handleBuyNow = () => {
-    if (!isAuthenticated) {
-      sessionStorage.setItem('checkoutProductId', product.id.toString());
-      navigate('/auth');
-      return;
-    }
-    const item = {
-      productId: String(product.id),
-      quantity: 1,
-      price: product.price,
-      total: product.price,
-      product: {
-        ...product,
-        id: String(product.id),
-        name: product.name, // Explicit name mapping
-        description: product.benefit, // Map benefit to description
-        price: String(product.price),
-        imageUrl: product.image, // Map image to imageUrl
-        images: [product.image]
-      }
-    };
-    sessionStorage.setItem('buyNowItem', JSON.stringify(item));
-    localStorage.setItem('checkoutType', 'direct');
-    localStorage.setItem('buyNowItem', JSON.stringify(item));
-    navigate('/checkout');
-  };
+function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen: boolean; onClose: () => void }) {
+  if (!product) return null;
 
   return (
-    <InteractiveCard
-      InteractiveColor="hsl(38 55% 70%)"
-      tailwindBgClass="bg-card"
-      className="h-full"
-      borderRadius="16px"
-      rotationFactor={0.2}
-    >
-      <Card
-        className="h-full p-0 overflow-hidden border-0 bg-transparent max-w-sm cursor-pointer"
-        onClick={(e) => {
-          // Prevent navigation if clicking interactive elements inside the card
-          if ((e.target as HTMLElement).closest('button')) return;
-          navigate(`/product/${product.id}`);
-        }}
-      >
-        {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-cream to-cream-dark">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-
-          {/* Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-espresso/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-          {/* Like Button */}
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => addToWishlistMutation.mutate()}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full glass flex items-center justify-center shadow-soft hover:shadow-medium transition-all duration-300"
-          >
-            <Heart
-              className={`h-5 w-5 transition-colors duration-300 ${isLiked ? "fill-rose-dark text-rose-dark" : "text-espresso"
-                }`}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-warmWhite border-none">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto">
+          {/* Image Section */}
+          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-8">
+            <motion.img
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              src={product.imageUrl || product.images?.[0]}
+              alt={product.name}
+              className="w-full h-auto max-h-[500px] object-contain drop-shadow-2xl rounded-2xl"
             />
-          </motion.button>
-
-          {/* Collection Badge */}
-          <div className="absolute top-4 left-4">
-            <Badge className="bg-card/90 backdrop-blur-sm text-espresso border-0 text-xs font-medium px-3 py-1 shadow-soft">
-              {product.collection}
-            </Badge>
           </div>
 
-          {/* Quick View */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileHover={{ opacity: 1, y: 0 }}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300"
-          >
-            <Button variant="secondary" size="sm" className="glass shadow-medium">
-              <Eye className="h-4 w-4 mr-2" />
-              Quick View
-            </Button>
-          </motion.div>
-        </div>
-
-        {/* Content */}
-        <div className="p-4">
-          {/* Derma Badge & Rating */}
-          <div className="flex items-center justify-between mb-3">
-            {product.dermatologyTested && (
-              <Badge variant="outline" className="border-gold/50 text-espresso-light bg-cream/50 text-[10px] font-medium">
-                <Shield className="h-3 w-3 mr-1" />
-                Derma Tested
+          {/* Details Section */}
+          <div className="w-full md:w-1/2 p-8 space-y-6 flex flex-col justify-center">
+            <div className="space-y-2">
+              <Badge className="bg-gold/20 text-gold-dark border-gold/30 hover:bg-gold/30">
+                {product.subcategory}
               </Badge>
+              <DialogTitle className="text-3xl font-display font-bold text-espresso leading-tight">
+                {product.name}
+              </DialogTitle>
+              <p className="text-espresso/60 font-medium">By {product.brand}</p>
+            </div>
+
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-bold text-gold-dark">₹{product.price}</span>
+              {product.originalPrice && (
+                <span className="text-xl text-muted-foreground line-through opacity-50">
+                  ₹{product.originalPrice}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <DialogDescription className="text-espresso/80 leading-relaxed text-base">
+                {product.description}
+              </DialogDescription>
+
+              {product.specifications && (
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+                  {Object.entries(product.specifications).map(([key, value]: [string, any]) => (
+                    <div key={key} className="space-y-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{key}</p>
+                      <p className="text-sm font-medium text-espresso">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-6 flex gap-3">
+              <Button size="lg" className="flex-1 bg-espresso hover:bg-espresso/90 text-white rounded-xl h-14 text-lg font-semibold group">
+                Add to Cart
+                <ShoppingCart className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+              <Button size="icon" variant="outline" className="h-14 w-14 rounded-xl border-2 border-border hover:border-gold hover:bg-cream transition-all duration-300">
+                <Heart className="h-6 w-6 text-espresso" />
+              </Button>
+            </div>
+            
+            {product.careGuide && (
+              <div className="p-4 bg-cream/30 rounded-xl border border-gold/10">
+                <p className="text-xs font-bold text-gold-dark uppercase tracking-widest mb-1">Care Guide</p>
+                <p className="text-xs text-espresso/70 italic">{product.careGuide}</p>
+              </div>
             )}
-            <div className="flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-gold text-gold" />
-              <span className="text-xs font-medium text-foreground">{product.rating}</span>
-            </div>
-          </div>
-
-          {/* Title */}
-          <h3 className="font-display text-base font-semibold text-foreground mb-2 line-clamp-1">
-            {product.name}
-          </h3>
-
-          {/* Brand/Collection */}
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-            {product.collection}
-          </p>
-
-          {/* Benefit/Description */}
-          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-            {product.benefit || product.description}
-          </p>
-
-          {/* Price & Actions */}
-          <div className="flex items-center justify-between pt-3 border-t border-border">
-            <span className="text-xl font-display font-bold text-foreground">
-              ₹{product.price}
-            </span>
-
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                className="bg-espresso hover:bg-espresso-light text-primary-foreground shadow-soft hover:shadow-medium transition-all duration-300"
-                onClick={() => addToCartMutation.mutate()}
-                disabled={addToCartMutation.isPending || cartCooldown}
-              >
-                {addToCartMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-1" />
-                    {cartCooldown ? "Added" : "Add"}
-                  </>
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-gold text-espresso hover:bg-gold/10"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                Details
-              </Button>
-              <Button
-                size="sm"
-                className="bg-gradient-to-r from-[#4B3A2F] to-[#3B2D25] text-white hover:opacity-90 transition-opacity shadow-soft hover:shadow-medium"
-                onClick={handleBuyNow}
-              >
-                Buy Now
-              </Button>
-            </div>
           </div>
         </div>
-      </Card>
-    </InteractiveCard>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 /* ------------------------------------
-   MAIN PAGE
+   Cosmetics Products Main
 ------------------------------------ */
 export default function CosmeticsProducts() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState<any>({});
-  const [isQuizOpen, setIsQuizOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const { toast } = useToast();
-  const [addingToCart, setAddingToCart] = useState<number | string | null>(null);
-
-  const { data: dbProducts, isLoading: productsLoading } = useQuery<any[]>({
-    queryKey: ["/api/products"],
+  const [selectedFilters, setSelectedFilters] = useState<any>({
+    concerns: [],
+    skinType: "",
+    sensitive: false,
+    texture: "",
+    ingredient: [],
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
-  const displayProducts = useMemo(() => {
-    if (productsLoading) return [];
-    if (!dbProducts) return [];
-    return dbProducts.map((p: any) => {
-      const specs = p.specifications || {};
-      const skinTypes = specs['Skin Type'] ? specs['Skin Type'].split(',').map((s: string) => s.trim()) : [];
-      const concerns = specs['Concern'] ? specs['Concern'].split(',').map((s: string) => s.trim()) : [];
-      const ingredients = specs['Key Ingredients'] ? specs['Key Ingredients'].split(',').map((s: string) => s.trim()) : [];
-
-      return {
-        ...p,
-        id: String(p.id),
-        productId: String(p.id),
-        name: p.name,
-        benefit: p.description,
-        price: parsePrice(p.price),
-        image: p.imageUrl || "/images/placeholder.jpg",
-        collection: p.brand || p.collection || "Collection",
-        rating: Number(p.rating) || 4.5,
-        skinType: skinTypes,
-        concern: concerns,
-        activeIngredient: ingredients,
-        dermatologyTested: p.dermatologyTested ?? true,
-        texture: specs['Texture'] || p.texture || "serum",
-        description: p.description,
-        brand: p.brand
-      };
-    });
-  }, [dbProducts, productsLoading]);
-
+  // Filter products locally from the imported JSON
   const filteredProducts = useMemo(() => {
-    return displayProducts.filter((product: any) => {
-      const matchesSearch = !searchQuery ||
+    return productsData.filter((product: any) => {
+      if (product.category !== "cosmetic") return false;
+
+      const searchMatch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.benefit && product.benefit.toLowerCase().includes(searchQuery.toLowerCase()));
+        product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesConcerns = !filters.concerns?.length ||
-        (product.concern && filters.concerns.some((c: string) => product.concern.includes(c)));
+      if (!searchMatch) return false;
 
-      const matchesSkinType = !filters.skinType ||
-        (product.skinType && (
-          product.skinType.includes(filters.skinType) ||
-          product.skinType.some((s: string) => s.toLowerCase().includes("all"))
-        ));
+      if (selectedFilters.concerns.length > 0) {
+        const productConcern = product.specifications?.Concern || "";
+        const hasConcern = selectedFilters.concerns.some((c: string) => 
+          productConcern.toLowerCase().includes(c.toLowerCase())
+        );
+        if (!hasConcern) return false;
+      }
 
-      const matchesTexture = !filters.texture ||
-        (product.texture && product.texture.toLowerCase() === filters.texture.toLowerCase());
+      if (selectedFilters.skinType) {
+        const productSkinType = product.specifications?.["Skin Type"] || "";
+        if (!productSkinType.toLowerCase().includes(selectedFilters.skinType.toLowerCase()) && 
+            !productSkinType.toLowerCase().includes("all skin types")) {
+          return false;
+        }
+      }
 
-      const matchesIngredient = !filters.ingredient?.length ||
-        (product.activeIngredient && filters.ingredient.some((ing: string) => product.activeIngredient.includes(ing)));
+      if (selectedFilters.texture) {
+        const productTexture = product.specifications?.Texture || "";
+        if (!productTexture.toLowerCase().includes(selectedFilters.texture.toLowerCase())) {
+          return false;
+        }
+      }
 
-      return matchesSearch && matchesConcerns && matchesSkinType && matchesTexture && matchesIngredient;
+      if (selectedFilters.ingredient.length > 0) {
+        const productIngredients = product.specifications?.["Key Ingredients"] || "";
+        const hasIngredient = selectedFilters.ingredient.some((i: string) => 
+          productIngredients.toLowerCase().includes(i.toLowerCase())
+        );
+        if (!hasIngredient) return false;
+      }
+
+      return true;
     });
-  }, [displayProducts, searchQuery, filters]);
-
-  const handleAddToCart = async (product: any) => {
-    setAddingToCart(product.id);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setAddingToCart(null);
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-  };
+  }, [searchQuery, selectedFilters]);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-br from-gold/10 to-cream/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-br from-rose/10 to-cream/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
-        <div className="absolute bottom-40 left-1/4 w-56 h-56 bg-gradient-to-br from-cream/30 to-gold/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "4s" }} />
-      </div>
-
-      {/* Hero Section */}
-      <section className="relative pt-8 pb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-warmWhite py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-12 text-center lg:text-left">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="glass rounded-3xl p-8 sm:p-10 shadow-large relative overflow-hidden"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cream-dark text-espresso-light mb-4"
           >
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.03]">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }} />
-            </div>
-
-            <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-5">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                  className="p-4 rounded-2xl bg-gradient-to-br from-cream to-cream-dark shadow-soft"
-                >
-                  <Sparkles className="h-10 w-10 text-espresso" />
-                </motion.div>
-                <div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="inline-flex items-center bg-cream rounded-full px-4 py-1.5 mb-3 shadow-soft"
-                  >
-                    <div className="w-2 h-2 bg-gold rounded-full mr-2 animate-pulse" />
-                    <span className="text-espresso font-medium text-xs uppercase tracking-wide">
-                      Clinical Precision
-                    </span>
-                  </motion.div>
-                  <h1 className="text-4xl sm:text-5xl font-display font-bold text-gradient">
-                    Skin-Smart Cosmetics
-                  </h1>
-                  <p className="text-muted-foreground mt-2">
-                    {filteredProducts.length} curated products for your unique skin
-                  </p>
-                </div>
-              </div>
-
-              <Dialog open={isQuizOpen} onOpenChange={setIsQuizOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    size="lg"
-                    className="bg-espresso text-primary-foreground shadow-medium hover:shadow-large transition-all duration-300 font-medium"
-                  >
-                    <Beaker className="mr-2 h-5 w-5" />
-                    Skin Finder Quiz
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Discover Your Perfect Match</DialogTitle>
-                    <DialogDescription>
-                      Answer a few questions to find products tailored to your skin
-                    </DialogDescription>
-                  </DialogHeader>
-                  <SkinFinderQuiz
-                    onComplete={(f) => {
-                      setFilters(f);
-                      setTimeout(() => setIsQuizOpen(false), 300);
-                    }}
-                  />
-                </DialogContent>
-              </Dialog>
-            </div>
+            <Sparkles className="h-4 w-4 text-gold" />
+            <span className="text-xs font-bold tracking-widest uppercase">Clinical Precision</span>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {/* Mobile Filter Button */}
-        <div className="lg:hidden mb-6">
-          <Dialog open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full border-2 border-border hover:border-gold hover:bg-cream/50">
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
-                {Object.values(filters).some((v: any) => v?.length > 0 || v === true || (typeof v === 'string' && v)) && (
-                  <Badge className="ml-2 bg-gold text-espresso">Active</Badge>
-                )}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="font-display">Precision Filters</DialogTitle>
-              </DialogHeader>
-              <PrecisionSidebar onChange={setFilters} onClose={() => setIsFiltersOpen(false)} />
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:block">
-            <PrecisionSidebar onChange={setFilters} />
-          </div>
-
-          {/* Products Section */}
-          <div className="flex-1">
-            {/* Search */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8"
-            >
-              <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-espresso transition-colors" />
-                <Input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 py-6 text-base border-2 border-border focus:border-gold rounded-xl bg-card/50 backdrop-blur-sm shadow-soft focus:shadow-medium transition-all"
-                />
-              </div>
-            </motion.div>
-
-            {/* Product Count */}
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm text-muted-foreground">
-                Showing <span className="font-medium text-foreground">{filteredProducts.length}</span> products
+          
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div>
+              <h1 className="text-5xl lg:text-6xl font-display font-bold text-espresso mb-4 tracking-tight">
+                Skin-Smart Cosmetics
+              </h1>
+              <p className="text-lg text-espresso/60 max-w-2xl font-medium">
+                {filteredProducts.length} curated products for your unique skin needs.
               </p>
             </div>
+            
+            <Dialog open={showQuiz} onOpenChange={setShowQuiz}>
+              <DialogTrigger asChild>
+                <Button className="bg-espresso hover:bg-espresso/90 text-white rounded-xl h-14 px-8 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300">
+                  <Eye className="mr-2 h-5 w-5" />
+                  Skin Finder Quiz
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md bg-warmWhite border-none shadow-2xl rounded-3xl p-8">
+                <DialogHeader className="mb-4">
+                  <DialogTitle className="text-3xl font-display font-bold text-espresso">Skin Profile Quiz</DialogTitle>
+                </DialogHeader>
+                <SkinFinderQuiz onComplete={(filters) => {
+                  setSelectedFilters(filters);
+                  setShowQuiz(false);
+                }} />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              <AnimatePresence mode="popLayout">
-                {filteredProducts.map((product, index) => (
-                  <motion.div
-                    key={product.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="group"
-                  >
-                    <ProductCard
-                      product={product}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Sidebar */}
+          <PrecisionSidebar onChange={setSelectedFilters} />
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Search Bar */}
+            <div className="relative mb-10 group">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-gold transition-colors" />
+              <Input
+                placeholder="Search products, ingredients, or concerns..."
+                className="pl-14 h-16 bg-white border-2 border-border focus:border-gold rounded-2xl text-lg shadow-soft focus:shadow-medium transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
 
-            {/* No Results */}
-            {filteredProducts.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-20"
-              >
-                <div className="glass rounded-3xl p-12 max-w-md mx-auto shadow-medium">
-                  <div className="w-20 h-20 bg-gradient-to-br from-cream to-cream-dark rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <Search className="h-10 w-10 text-espresso" />
+            {/* Results Grid */}
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.length > 0 ? (
+                <motion.div 
+                  layout
+                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
+                >
+                  {filteredProducts.map((product, idx) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      onClick={() => setSelectedProduct(product)}
+                      className="cursor-pointer group"
+                    >
+                      <InteractiveCard
+                        InteractiveColor="hsl(38 55% 70%)"
+                        tailwindBgClass="bg-white"
+                        className="h-full border-none shadow-soft hover:shadow-xl transition-all duration-500 overflow-hidden"
+                        borderRadius="24px"
+                        rotationFactor={0.15}
+                      >
+                        <div className="flex flex-col h-full">
+                          {/* Image */}
+                          <div className="relative aspect-[4/5] bg-cream overflow-hidden">
+                            <motion.img
+                              whileHover={{ scale: 1.05 }}
+                              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+                              src={product.imageUrl || product.images?.[0]}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-4 left-4">
+                              <Badge className="bg-white/90 backdrop-blur-md text-espresso border-none font-bold text-[10px] tracking-widest px-3 py-1.5 shadow-sm">
+                                {product.subcategory}
+                              </Badge>
+                            </div>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-espresso hover:text-rose-500 transition-colors shadow-sm"
+                            >
+                              <Heart className="h-5 w-5" />
+                            </button>
+                          </div>
+
+                          {/* Content */}
+                          <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                            <div>
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-xl font-display font-bold text-espresso leading-tight group-hover:text-gold-dark transition-colors line-clamp-2">
+                                  {product.name}
+                                </h3>
+                                <span className="text-xl font-bold text-espresso ml-2">₹{product.price}</span>
+                              </div>
+                              <p className="text-sm text-espresso/60 line-clamp-2 font-medium leading-relaxed">
+                                {product.shortDescription || product.description}
+                              </p>
+                            </div>
+
+                            <div className="pt-4 flex items-center justify-between border-t border-cream-dark/50">
+                              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-gold-dark">
+                                View Details
+                              </span>
+                              <div className="h-10 w-10 rounded-full bg-cream flex items-center justify-center group-hover:bg-gold transition-colors duration-300">
+                                <ArrowRight className="h-5 w-5 text-espresso group-hover:text-white transition-colors" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </InteractiveCard>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-32 bg-white rounded-[32px] border-2 border-dashed border-border"
+                >
+                  <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Search className="h-10 w-10 text-espresso/30" />
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-foreground mb-3">
-                    No products found
-                  </h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="text-2xl font-display font-bold text-espresso mb-2">No products found</h3>
+                  <p className="text-espresso/50 mb-8 max-w-sm mx-auto font-medium">
                     Try adjusting your filters or search query to discover more products.
                   </p>
-                  <Button
-                    variant="outline"
-                    className="mt-6 border-gold hover:bg-cream"
+                  <Button 
+                    variant="outline" 
+                    className="border-2 border-border hover:border-gold hover:bg-cream rounded-xl px-8 h-12 font-bold transition-all"
                     onClick={() => {
-                      setFilters({});
+                      setSelectedFilters({
+                        concerns: [],
+                        skinType: "",
+                        sensitive: false,
+                        texture: "",
+                        ingredient: [],
+                      });
                       setSearchQuery("");
                     }}
                   >
                     Clear All Filters
                   </Button>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal 
+        product={selectedProduct} 
+        isOpen={!!selectedProduct} 
+        onClose={() => setSelectedProduct(null)} 
+      />
     </div>
   );
 }
