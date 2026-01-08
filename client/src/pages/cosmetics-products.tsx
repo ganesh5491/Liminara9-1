@@ -516,6 +516,8 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.02, y: -5 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
               className="relative w-full aspect-square flex items-center justify-center bg-white/50 rounded-2xl p-8 shadow-inner"
             >
               <img
@@ -779,11 +781,16 @@ export default function CosmeticsProducts() {
                           {/* Image */}
                           <div className="relative aspect-[4/5] bg-cream overflow-hidden">
                             <motion.img
-                              whileHover={{ scale: 1.05 }}
-                              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+                              whileHover={{ scale: 1.1, rotate: 1 }}
+                              transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
                               src={product.imageUrl || product.images?.[0]}
                               alt={product.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-105"
+                            />
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              whileHover={{ opacity: 1 }}
+                              className="absolute inset-0 bg-espresso/5 pointer-events-none transition-opacity duration-500"
                             />
                             <div className="absolute top-4 left-4">
                               <Badge className="bg-white/90 backdrop-blur-md text-espresso border-none font-bold text-[10px] tracking-widest px-3 py-1.5 shadow-sm">
