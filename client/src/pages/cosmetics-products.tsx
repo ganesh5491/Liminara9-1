@@ -19,6 +19,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
   Sparkles,
   Search,
   Heart,
@@ -30,6 +36,9 @@ import {
   Beaker,
   Filter,
   X,
+  Star,
+  MessageCircle,
+  HelpCircle,
 } from "lucide-react";
 import productsData from "../../../data/products.json";
 
@@ -513,121 +522,196 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl p-0 overflow-hidden bg-warmWhite border-none shadow-2xl rounded-3xl">
-        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-warmWhite">
-          {/* Image Section */}
-          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-6 md:p-12 relative">
+      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto">
+          {/* Left Column: Media & Core Info */}
+          <div className="w-full md:w-1/2 bg-cream-light/30 p-8 md:p-12 space-y-8 border-r border-cream-dark/10">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative w-full aspect-square flex items-center justify-center bg-white/50 rounded-2xl p-8 shadow-inner"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.4 }}
+              className="relative aspect-square w-full bg-white rounded-3xl p-10 shadow-soft border border-cream-dark/20 flex items-center justify-center overflow-hidden"
             >
               <img
                 src={product.imageUrl || product.images?.[0]}
                 alt={product.name}
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
-              <div className="absolute top-4 left-4">
-                <Badge className="bg-white/90 text-gold-dark border-gold/20 font-bold tracking-widest text-[10px]">
+              <div className="absolute top-6 left-6">
+                <Badge className="bg-espresso text-white border-none font-bold tracking-widest text-[10px] px-3 py-1.5 rounded-full">
                   {product.subcategory}
                 </Badge>
               </div>
-              
-              {/* Like Button moved to image top right corner */}
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => addToWishlistMutation.mutate()}
-                className="absolute top-4 right-4 w-12 h-12 rounded-full glass bg-white/80 backdrop-blur-md flex items-center justify-center shadow-medium hover:shadow-xl transition-all duration-300 z-10"
+                className="absolute top-6 right-6 w-12 h-12 rounded-full glass bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <Heart
-                  className={`h-6 w-6 transition-colors duration-300 ${isLiked ? "fill-rose-dark text-rose-dark" : "text-espresso"}`}
+                  className={`h-6 w-6 transition-colors duration-300 ${isLiked ? "fill-rose-500 text-rose-500" : "text-espresso"}`}
                 />
               </motion.button>
             </motion.div>
-          </div>
-
-          {/* Details Section */}
-          <div className="w-full md:w-1/2 p-6 md:p-12 space-y-8 flex flex-col justify-start bg-espresso text-white">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-[0.2em] text-gold uppercase">
-                  {product.brand} • {product.category}
-                </span>
-                {product.specifications?.["Skin Type"] && (
-                  <Badge variant="outline" className="border-gold/30 text-gold bg-white/10">
-                    {product.specifications["Skin Type"]}
-                  </Badge>
-                )}
-              </div>
-              <DialogTitle className="text-4xl md:text-5xl font-display font-bold text-white leading-[1.1]">
-                {product.name}
-              </DialogTitle>
-              <div className="flex items-center gap-4 pt-2">
-                <span className="text-4xl font-bold text-gold">₹{product.price}</span>
-                {product.originalPrice && (
-                  <span className="text-xl text-white/50 line-through font-medium">
-                    ₹{product.originalPrice}
-                  </span>
-                )}
-              </div>
-            </div>
 
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">About This Product</h4>
-                <DialogDescription className="text-white/80 leading-relaxed text-lg font-medium">
-                  {product.description}
-                </DialogDescription>
+              <div className="flex items-center gap-6 p-6 bg-white rounded-2xl border border-cream-dark/20 shadow-sm">
+                <div className="text-center border-r border-cream-dark/30 pr-6">
+                  <p className="text-4xl font-display font-black text-espresso">{product.rating || "4.8"}</p>
+                  <div className="flex gap-0.5 mt-1">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <Star key={s} className="h-3 w-3 fill-gold text-gold" />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-espresso">High Performance</p>
+                  <p className="text-xs text-espresso/60 font-medium">Based on 150+ verified reviews</p>
+                </div>
               </div>
 
-              {product.specifications && (
-                <div className="grid grid-cols-2 gap-x-8 gap-y-6 pt-6 border-t border-white/10">
-                  {Object.entries(product.specifications)
-                    .filter(([key]) => !["Skin Type", "Concern"].includes(key))
-                    .map(([key, value]: [string, any]) => (
-                    <div key={key} className="space-y-1.5">
-                      <p className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-black">{key}</p>
-                      <p className="text-sm font-bold text-white">{value}</p>
+              {product.careGuide && (
+                <div className="p-6 bg-espresso rounded-3xl text-white shadow-xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                    <Sparkles className="h-16 w-16 text-gold" />
+                  </div>
+                  <div className="flex gap-4 items-start relative z-10">
+                    <div className="h-10 w-10 rounded-2xl bg-gold flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-5 w-5 text-espresso" />
                     </div>
-                  ))}
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-gold uppercase tracking-widest">Expert Tip</p>
+                      <p className="text-xs text-white/80 leading-relaxed font-medium italic">{product.careGuide}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
+          </div>
 
-            <div className="pt-8 mt-auto space-y-4">
+          {/* Right Column: Detailed Tabs & Actions */}
+          <div className="w-full md:w-1/2 flex flex-col h-full bg-white relative">
+            <div className="p-8 md:p-12 pb-0 flex-1 overflow-y-auto">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <span className="text-xs font-bold tracking-[0.3em] text-gold-dark uppercase block">
+                    {product.brand} • {product.category}
+                  </span>
+                  <DialogTitle className="text-4xl md:text-5xl font-display font-black text-espresso leading-[1.1] tracking-tight">
+                    {product.name}
+                  </DialogTitle>
+                  <div className="flex items-center gap-4 pt-2">
+                    <span className="text-4xl font-bold text-espresso">₹{product.price}</span>
+                    {product.originalPrice && (
+                      <span className="text-xl text-espresso/30 line-through font-medium">
+                        ₹{product.originalPrice}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <Tabs defaultValue="overview" className="w-full">
+                  <TabsList className="w-full justify-start bg-transparent border-b border-cream-dark/20 h-auto p-0 rounded-none gap-8">
+                    <TabsTrigger value="overview" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Overview</TabsTrigger>
+                    <TabsTrigger value="details" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Specifications</TabsTrigger>
+                    <TabsTrigger value="reviews" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Reviews</TabsTrigger>
+                    <TabsTrigger value="qa" className="bg-transparent border-none text-espresso/40 data-[state=active]:text-espresso data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gold h-12 rounded-none px-0 text-xs font-bold uppercase tracking-widest transition-all">Q&A</TabsTrigger>
+                  </TabsList>
+
+                  <div className="py-8 min-h-[350px]">
+                    <TabsContent value="overview" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-espresso/40">Product Narrative</h4>
+                        <DialogDescription className="text-espresso/80 leading-relaxed text-lg font-medium">
+                          {product.description}
+                        </DialogDescription>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-cream/20 rounded-2xl border border-cream-dark/10">
+                          <p className="text-[10px] uppercase font-black text-gold-dark mb-1">Texture</p>
+                          <p className="text-sm font-bold text-espresso">{product.specifications?.Texture || "Lightweight Liquid"}</p>
+                        </div>
+                        <div className="p-4 bg-cream/20 rounded-2xl border border-cream-dark/10">
+                          <p className="text-[10px] uppercase font-black text-gold-dark mb-1">Scent</p>
+                          <p className="text-sm font-bold text-espresso">{product.specifications?.Scent || "Fresh Citrus"}</p>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="details" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="grid grid-cols-1 gap-6">
+                        {product.specifications && Object.entries(product.specifications).map(([key, value]: [string, any]) => (
+                          <div key={key} className="flex justify-between items-center py-4 border-b border-cream-dark/10">
+                            <span className="text-xs font-bold text-espresso/40 uppercase tracking-widest">{key}</span>
+                            <span className="text-sm font-bold text-espresso">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="reviews" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="space-y-4">
+                        {[
+                          { name: "Eleanor S.", rating: 5, date: "Oct 12, 2025", text: "Finally found a serum that actually delivers. My skin feels incredibly hydrated and the glow is undeniable." },
+                          { name: "Marcus T.", rating: 4, date: "Sep 28, 2025", text: "Great texture, absorbs quickly. Not seeing major changes in pigmentation yet but it's only been two weeks." }
+                        ].map((rev, i) => (
+                          <div key={i} className="p-5 rounded-2xl bg-cream/5 border border-cream-dark/10 space-y-3">
+                            <div className="flex justify-between items-center">
+                              <p className="text-sm font-bold text-espresso">{rev.name}</p>
+                              <p className="text-[10px] font-bold text-espresso/40">{rev.date}</p>
+                            </div>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`h-3 w-3 ${s <= rev.rating ? "fill-gold text-gold" : "text-cream-dark"}`} />)}
+                            </div>
+                            <p className="text-sm text-espresso/70 leading-relaxed font-medium italic">"{rev.text}"</p>
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="qa" className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <div className="space-y-4">
+                        {[
+                          { q: "Is this safe for sensitive skin?", a: "Absolutely. Our formulas are dermatologist tested and designed to be gentle yet effective even on sensitive skin types." },
+                          { q: "When should I apply this in my routine?", a: "Apply after cleansing and toning, but before heavier creams and oils. Morning and night for best results." }
+                        ].map((item, i) => (
+                          <div key={i} className="space-y-3 p-5 rounded-2xl bg-espresso/[0.02] border border-cream-dark/10">
+                            <div className="flex gap-3">
+                              <HelpCircle className="h-5 w-5 text-gold-dark flex-shrink-0" />
+                              <p className="text-sm font-bold text-espresso">{item.q}</p>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                              <MessageCircle className="h-5 w-5 text-espresso/20 flex-shrink-0" />
+                              <p className="text-sm text-espresso/60 font-medium leading-relaxed">{item.a}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </div>
+            </div>
+
+            {/* Fixed Footer Actions */}
+            <div className="p-8 md:p-12 pt-8 bg-white border-t border-cream-dark/20 sticky bottom-0 z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
               <div className="flex flex-wrap gap-4">
                 <Button 
                   size="lg" 
                   onClick={() => addToCartMutation.mutate()}
-                  className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-16 text-xl font-bold group shadow-xl border-none min-w-[160px]"
+                  className="flex-[2] bg-espresso hover:bg-espresso/95 text-white rounded-2xl h-18 text-xl font-black group shadow-2xl transition-all active:scale-[0.98] min-w-[200px]"
                 >
-                  Add to Cart
-                  <ShoppingCart className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                  <ShoppingCart className="mr-4 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                  Add to Collection
                 </Button>
-                
-                {/* Buy Now Button added */}
                 <Button 
                   size="lg"
                   onClick={handleBuyNow}
-                  className="flex-1 bg-white hover:bg-cream text-espresso rounded-2xl h-16 text-xl font-bold shadow-xl border-none min-w-[160px]"
+                  className="flex-1 bg-gold hover:bg-gold-dark text-espresso rounded-2xl h-18 text-xl font-black shadow-2xl transition-all active:scale-[0.98] min-w-[150px]"
                 >
                   Buy Now
                 </Button>
               </div>
-              
-              {product.careGuide && (
-                <div className="p-5 bg-white/5 rounded-2xl border border-white/10 flex gap-4 items-start">
-                  <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-4 w-4 text-gold" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-gold uppercase tracking-widest">Expert Tip</p>
-                    <p className="text-xs text-white/70 leading-relaxed font-medium italic">{product.careGuide}</p>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
