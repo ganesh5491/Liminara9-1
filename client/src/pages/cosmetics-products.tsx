@@ -399,73 +399,99 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-warmWhite border-none shadow-2xl">
+      <DialogContent className="max-w-5xl p-0 overflow-hidden bg-warmWhite border-none shadow-2xl rounded-3xl">
         <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-warmWhite">
           {/* Image Section */}
-          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-8">
-            <motion.img
+          <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-6 md:p-12">
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              src={product.imageUrl || product.images?.[0]}
-              alt={product.name}
-              className="w-full h-auto max-h-[500px] object-contain drop-shadow-2xl rounded-2xl"
-            />
+              className="relative w-full aspect-square flex items-center justify-center bg-white/50 rounded-2xl p-8 shadow-inner"
+            >
+              <img
+                src={product.imageUrl || product.images?.[0]}
+                alt={product.name}
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-white/90 text-gold-dark border-gold/20 font-bold tracking-widest text-[10px]">
+                  {product.subcategory}
+                </Badge>
+              </div>
+            </motion.div>
           </div>
 
           {/* Details Section */}
-          <div className="w-full md:w-1/2 p-8 space-y-6 flex flex-col justify-center">
-            <div className="space-y-2">
-              <Badge className="bg-gold/20 text-gold-dark border-gold/30 hover:bg-gold/30">
-                {product.subcategory}
-              </Badge>
-              <DialogTitle className="text-3xl font-display font-bold text-espresso leading-tight">
+          <div className="w-full md:w-1/2 p-6 md:p-12 space-y-8 flex flex-col justify-start">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold tracking-[0.2em] text-gold-dark uppercase">
+                  {product.brand} • {product.category}
+                </span>
+                {product.specifications?.["Skin Type"] && (
+                  <Badge variant="outline" className="border-border text-espresso/60 bg-white/50">
+                    {product.specifications["Skin Type"]}
+                  </Badge>
+                )}
+              </div>
+              <DialogTitle className="text-4xl md:text-5xl font-display font-bold text-espresso leading-[1.1]">
                 {product.name}
               </DialogTitle>
-              <p className="text-espresso/60 font-medium">By {product.brand}</p>
+              <div className="flex items-center gap-4 pt-2">
+                <span className="text-4xl font-bold text-gold-dark">₹{product.price}</span>
+                {product.originalPrice && (
+                  <span className="text-xl text-muted-foreground line-through opacity-50 font-medium">
+                    ₹{product.originalPrice}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-gold-dark">₹{product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xl text-muted-foreground line-through opacity-50">
-                  ₹{product.originalPrice}
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <DialogDescription className="text-espresso/80 leading-relaxed text-base">
-                {product.description}
-              </DialogDescription>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-espresso/40">About This Product</h4>
+                <DialogDescription className="text-espresso/80 leading-relaxed text-lg font-medium">
+                  {product.description}
+                </DialogDescription>
+              </div>
 
               {product.specifications && (
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-                  {Object.entries(product.specifications).map(([key, value]: [string, any]) => (
-                    <div key={key} className="space-y-1">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{key}</p>
-                      <p className="text-sm font-medium text-espresso">{value}</p>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-6 pt-6 border-t border-cream-dark/50">
+                  {Object.entries(product.specifications)
+                    .filter(([key]) => !["Skin Type", "Concern"].includes(key))
+                    .map(([key, value]: [string, any]) => (
+                    <div key={key} className="space-y-1.5">
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-espresso/40 font-black">{key}</p>
+                      <p className="text-sm font-bold text-espresso">{value}</p>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="pt-6 flex gap-3">
-              <Button size="lg" className="flex-1 bg-espresso hover:bg-espresso/90 text-white rounded-xl h-14 text-lg font-semibold group">
-                Add to Cart
-                <ShoppingCart className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button size="icon" variant="outline" className="h-14 w-14 rounded-xl border-2 border-border hover:border-gold hover:bg-cream transition-all duration-300">
-                <Heart className="h-6 w-6 text-espresso" />
-              </Button>
-            </div>
-            
-            {product.careGuide && (
-              <div className="p-4 bg-cream/30 rounded-xl border border-gold/10">
-                <p className="text-xs font-bold text-gold-dark uppercase tracking-widest mb-1">Care Guide</p>
-                <p className="text-xs text-espresso/70 italic">{product.careGuide}</p>
+            <div className="pt-8 mt-auto space-y-4">
+              <div className="flex gap-4">
+                <Button size="lg" className="flex-1 bg-espresso hover:bg-espresso/90 text-white rounded-2xl h-16 text-xl font-bold group shadow-xl">
+                  Add to Cart
+                  <ShoppingCart className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                </Button>
+                <Button size="icon" variant="outline" className="h-16 w-16 rounded-2xl border-2 border-border hover:border-gold hover:bg-cream transition-all duration-500">
+                  <Heart className="h-7 w-7 text-espresso" />
+                </Button>
               </div>
-            )}
+              
+              {product.careGuide && (
+                <div className="p-5 bg-gold/5 rounded-2xl border border-gold/10 flex gap-4 items-start">
+                  <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="h-4 w-4 text-gold-dark" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-gold-dark uppercase tracking-widest">Expert Tip</p>
+                    <p className="text-xs text-espresso/70 leading-relaxed font-medium italic">{product.careGuide}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>
