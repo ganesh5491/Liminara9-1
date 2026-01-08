@@ -181,26 +181,5 @@
         "specifications": {
             "Concern": "Pigmentation, Pores"
         }
-    },
-    {
-        "id": "cos-009",
-        "name": "Hydrating Sheet Mask Pack",
-        "description": "Set of 5 intensive hydration sheet masks with hyaluronic acid and ceramides. Deep moisture infusion for instantly plump, glowing skin.",
-        "shortDescription": "Set of 5 intensive hydration sheet masks with hyaluronic acid and ceramides.",
-        "price": "999",
-        "originalPrice": "1,499",
-        "images": [
-            "/images/c9.jpg"
-        ],
-        "imageUrl": "/images/c9.jpg",
-        "inStock": true,
-        "stock": 80,
-        "featured": false,
-        "category": "cosmetic",
-        "subcategory": "Face Masks",
-        "brand": "Liminara",
-        "specifications": {
-            "Concern": "Dryness, Dullness"
-        }
     }
 ]

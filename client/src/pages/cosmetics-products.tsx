@@ -399,8 +399,8 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-warmWhite border-none">
-        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-warmWhite border-none shadow-2xl">
+        <div className="flex flex-col md:flex-row h-full max-h-[90vh] overflow-y-auto bg-warmWhite">
           {/* Image Section */}
           <div className="w-full md:w-1/2 bg-cream flex items-center justify-center p-8">
             <motion.img
