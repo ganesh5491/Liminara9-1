@@ -1,11 +1,29 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
     ShoppingCart,
     Heart,
@@ -20,12 +38,21 @@ import {
     MessageCircle,
     HelpCircle,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertProductReviewSchema, insertProductQuestionSchema } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Product, ProductReview, ProductQuestion } from "@shared/schema";
+import { z } from "zod";
 
 export default function ProductDetailPage() {
     const { id } = useParams();
+    const { toast } = useToast();
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+    const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
 
     const { data: product, isLoading: productLoading } = useQuery<Product>({
         queryKey: [`/api/products/${id}`],
@@ -38,6 +65,58 @@ export default function ProductDetailPage() {
     const { data: questions = [], isLoading: questionsLoading } = useQuery<ProductQuestion[]>({
         queryKey: [`/api/products/${id}/questions`],
     });
+
+    // Forms
+    const reviewForm = useForm<z.infer<typeof insertProductReviewSchema>>({
+        resolver: zodResolver(insertProductReviewSchema),
+        defaultValues: {
+            productId: id || "",
+            userName: "",
+            rating: 5,
+            comment: "",
+            title: "",
+            status: "approved",
+        }
+    });
+
+    const questionForm = useForm<z.infer<typeof insertProductQuestionSchema>>({
+        resolver: zodResolver(insertProductQuestionSchema),
+        defaultValues: {
+            productId: id || "",
+            userName: "",
+            question: "",
+            status: "pending",
+        }
+    });
+
+    // Mutations
+    const reviewMutation = useMutation({
+        mutationFn: async (values: z.infer<typeof insertProductReviewSchema>) => {
+            await apiRequest("POST", `/api/products/${id}/reviews`, values);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [`/api/products/${id}/reviews`] });
+            toast({ title: "Review Submitted", description: "Thank you for your feedback!" });
+            setIsReviewDialogOpen(false);
+            reviewForm.reset();
+        }
+    });
+
+    const questionMutation = useMutation({
+        mutationFn: async (values: z.infer<typeof insertProductQuestionSchema>) => {
+            await apiRequest("POST", `/api/products/${id}/questions`, values);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [`/api/products/${id}/questions`] });
+            toast({ title: "Question Sent", description: "We'll get back to you soon!" });
+            setIsQuestionDialogOpen(false);
+            questionForm.reset();
+        }
+    });
+
+    const averageRating = reviews.length > 0 
+        ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+        : "4.9";
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(Math.max(1, quantity + delta));
@@ -143,10 +222,10 @@ export default function ProductDetailPage() {
                             </h1>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="flex gap-0.5">
-                                    {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-4 w-4 fill-[#D4B590] text-[#D4B590]" />)}
+                                    {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`h-4 w-4 ${s <= Math.round(Number(averageRating)) ? "fill-[#D4B590] text-[#D4B590]" : "text-[#E3C7A0]/30"}`} />)}
                                 </div>
                                 <span className="text-sm font-bold text-[#4B3A2F]/60">
-                                    (4.9 out of 5 stars) {reviews.length > 0 ? reviews.length : "234"} reviews
+                                    ({averageRating} out of 5 stars) {reviews.length > 0 ? reviews.length : "234"} reviews
                                 </span>
                             </div>
 
@@ -279,7 +358,61 @@ export default function ProductDetailPage() {
                                             <MessageCircle className="h-6 w-6 text-[#D4B590]" />
                                             <h2 className="text-3xl font-display font-black text-[#3B2D25]">Customer Reviews</h2>
                                         </div>
-                                        <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Write Review</Button>
+                                        <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Write Review</Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>Write a Review</DialogTitle>
+                                                    <DialogDescription>Share your experience with this product.</DialogDescription>
+                                                </DialogHeader>
+                                                <Form {...reviewForm}>
+                                                    <form onSubmit={reviewForm.handleSubmit((data) => reviewMutation.mutate(data))} className="space-y-4">
+                                                        <FormField
+                                                            control={reviewForm.control}
+                                                            name="userName"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Your Name</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input placeholder="John Doe" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <FormField
+                                                            control={reviewForm.control}
+                                                            name="rating"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Rating (1-5)</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input type="number" min="1" max="5" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <FormField
+                                                            control={reviewForm.control}
+                                                            name="comment"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Review</FormLabel>
+                                                                    <FormControl>
+                                                                        <Textarea placeholder="What did you think of the product?" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <Button type="submit" className="w-full bg-[#4B3A2F]" disabled={reviewMutation.isPending}>Submit Review</Button>
+                                                    </form>
+                                                </Form>
+                                            </DialogContent>
+                                        </Dialog>
                                     </div>
                                     <div className="space-y-8">
                                         {reviews.length > 0 ? reviews.map((review) => (
@@ -308,7 +441,48 @@ export default function ProductDetailPage() {
                                             <HelpCircle className="h-6 w-6 text-[#D4B590]" />
                                             <h2 className="text-3xl font-display font-black text-[#3B2D25]">Product Q&A</h2>
                                         </div>
-                                        <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>
+                                        <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>Ask a Question</DialogTitle>
+                                                    <DialogDescription>Get more information from the community.</DialogDescription>
+                                                </DialogHeader>
+                                                <Form {...questionForm}>
+                                                    <form onSubmit={questionForm.handleSubmit((data) => questionMutation.mutate(data))} className="space-y-4">
+                                                        <FormField
+                                                            control={questionForm.control}
+                                                            name="userName"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Your Name</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input placeholder="John Doe" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <FormField
+                                                            control={questionForm.control}
+                                                            name="question"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Question</FormLabel>
+                                                                    <FormControl>
+                                                                        <Textarea placeholder="What would you like to know?" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <Button type="submit" className="w-full bg-[#4B3A2F]" disabled={questionMutation.isPending}>Submit Question</Button>
+                                                    </form>
+                                                </Form>
+                                            </DialogContent>
+                                        </Dialog>
                                     </div>
                                     <div className="space-y-8">
                                         {questions.length > 0 ? questions.map((q) => (

@@ -3426,6 +3426,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const reviewData = insertProductReviewSchema.parse({
+        ...req.body,
+        productId: req.params.id,
+        status: "approved", // Auto-approve for demo
+      });
+      const review = await (await getStorage()).createProductReview(reviewData);
+      res.status(201).json(review);
+    } catch (error) {
+      console.error("Error creating review:", error);
+      res.status(400).json({ message: "Invalid review data" });
+    }
+  });
+
+  app.post("/api/products/:id/questions", async (req, res) => {
+    try {
+      const questionData = insertProductQuestionSchema.parse({
+        ...req.body,
+        productId: req.params.id,
+        status: "pending",
+      });
+      const question = await (await getStorage()).createProductQuestion(questionData);
+      res.status(201).json(question);
+    } catch (error) {
+      console.error("Error creating question:", error);
+      res.status(400).json({ message: "Invalid question data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
