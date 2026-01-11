@@ -463,17 +463,6 @@ export default function ProductDetailPage() {
                                                         </Button>
                                                     </form>
                                                 </Form>
-                                                                    <FormLabel>Review</FormLabel>
-                                                                    <FormControl>
-                                                                        <Textarea placeholder="What did you think of the product?" {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                        <Button type="submit" className="w-full bg-[#4B3A2F]" disabled={reviewMutation.isPending}>Submit Review</Button>
-                                                    </form>
-                                                </Form>
                                             </DialogContent>
                                         </Dialog>
                                     </div>
@@ -577,69 +566,6 @@ export default function ProductDetailPage() {
                                                 <HelpCircle className="h-12 w-12 text-[#E3C7A0]/30 mx-auto mb-4" />
                                                 <p className="text-[#4B3A2F]/60 font-medium">No questions yet. Be the first to ask!</p>
                                             </div>
-                                        )}
-                                    </div>
-                                </Card>
-                            </TabsContent>
-                                        <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
-                                            <DialogTrigger asChild>
-                                                <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>Ask a Question</DialogTitle>
-                                                    <DialogDescription>Get more information from the community.</DialogDescription>
-                                                </DialogHeader>
-                                                <Form {...questionForm}>
-                                                    <form onSubmit={questionForm.handleSubmit((data) => questionMutation.mutate(data))} className="space-y-4">
-                                                        <FormField
-                                                            control={questionForm.control}
-                                                            name="userName"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Your Name</FormLabel>
-                                                                    <FormControl>
-                                                                        <Input placeholder="John Doe" {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                        <FormField
-                                                            control={questionForm.control}
-                                                            name="question"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Question</FormLabel>
-                                                                    <FormControl>
-                                                                        <Textarea placeholder="What would you like to know?" {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                        <Button type="submit" className="w-full bg-[#4B3A2F]" disabled={questionMutation.isPending}>Submit Question</Button>
-                                                    </form>
-                                                </Form>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </div>
-                                    <div className="space-y-8">
-                                        {questions.length > 0 ? questions.map((q) => (
-                                            <div key={q.id} className="space-y-4 p-6 rounded-2xl bg-[#FFF4E8]/50 border border-[#E3C7A0]/10">
-                                                <div className="flex gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-[#4B3A2F] text-[#F5D7B0] flex items-center justify-center font-black text-xs flex-shrink-0">Q</div>
-                                                    <p className="font-bold text-[#3B2D25]">{q.question}</p>
-                                                </div>
-                                                {q.answer && (
-                                                    <div className="flex gap-3 pl-4 border-l-2 border-[#D4B590]/30">
-                                                        <div className="w-8 h-8 rounded-full bg-[#D4B590] text-white flex items-center justify-center font-black text-xs flex-shrink-0">A</div>
-                                                        <p className="text-[#4B3A2F]/80 font-medium">{q.answer}</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )) : (
-                                            <p className="text-[#4B3A2F]/60 text-center py-12">No questions asked yet.</p>
                                         )}
                                     </div>
                                 </Card>
