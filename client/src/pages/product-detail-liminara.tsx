@@ -221,12 +221,58 @@ export default function ProductDetailPage() {
                             <h1 className="text-5xl font-display font-black text-[#3B2D25] mb-4 leading-tight">
                                 {product.name}
                             </h1>
-                            <div className="flex items-center gap-3 mb-6">
+                            <div className="flex items-center gap-3 mb-6 relative group/ratings">
                                 <div className="flex gap-0.5">
                                     {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`h-4 w-4 ${s <= Math.round(Number(averageRating)) ? "fill-[#D4B590] text-[#D4B590]" : "text-[#E3C7A0]/30"}`} />)}
                                 </div>
-                                <span className="text-sm font-bold text-[#4B3A2F]/60">
-                                    ({averageRating} out of 5 stars) {reviews.length > 0 ? reviews.length : "234"} reviews
+                                <span className="text-sm font-bold text-[#4B3A2F]/60 cursor-pointer hover:text-[#4B3A2F] transition-colors">
+                                    {averageRating} out of 5 stars <span className="ml-1 inline-block transition-transform group-hover/ratings:rotate-180">▼</span>
+                                </span>
+
+                                {/* Rating Popover */}
+                                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-[#E3C7A0]/20 p-6 opacity-0 invisible group-hover/ratings:opacity-100 group-hover/ratings:visible transition-all duration-200 z-[60]">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="flex gap-0.5">
+                                            {[1, 2, 3, 4, 5].map(s => <Star key={s} className={`h-4 w-4 ${s <= Math.round(Number(averageRating)) ? "fill-[#D4B590] text-[#D4B590]" : "text-[#E3C7A0]/30"}`} />)}
+                                        </div>
+                                        <span className="text-lg font-black text-[#3B2D25]">{averageRating} out of 5</span>
+                                    </div>
+                                    <p className="text-sm text-[#4B3A2F]/60 mb-6">{reviews.length > 0 ? reviews.length : "234"} global ratings</p>
+                                    
+                                    <div className="space-y-3">
+                                        {[5, 4, 3, 2, 1].map((rating) => {
+                                            const count = reviews.filter(r => r.rating === rating).length;
+                                            const total = reviews.length || 234; // Use fallback total if no reviews
+                                            const percentage = reviews.length > 0 ? Math.round((count / total) * 100) : (rating === 5 ? 50 : rating === 4 ? 28 : rating === 2 ? 10 : rating === 1 ? 12 : 0);
+                                            
+                                            return (
+                                                <div key={rating} className="flex items-center gap-4 group/bar">
+                                                    <span className="text-sm font-bold text-[#4B3A2F] w-10 whitespace-nowrap">{rating} star</span>
+                                                    <div className="flex-1 h-4 bg-[#FFF4E8] rounded-full overflow-hidden border border-[#E3C7A0]/20">
+                                                        <motion.div 
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${percentage}%` }}
+                                                            className="h-full bg-[#D4B590] rounded-full"
+                                                        />
+                                                    </div>
+                                                    <span className="text-sm font-bold text-[#4B3A2F]/60 w-10 text-right">{percentage}%</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="mt-6 pt-4 border-t border-[#E3C7A0]/10 text-center">
+                                        <button 
+                                            onClick={() => document.querySelector('[value="reviews"]')?.dispatchEvent(new MouseEvent('click', {bubbles: true}))}
+                                            className="text-sm font-bold text-[#D4B590] hover:text-[#4B3A2F] transition-colors inline-flex items-center gap-1"
+                                        >
+                                            See customer reviews <span className="text-[10px]">▶</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <span className="text-sm font-bold text-[#4B3A2F]/60 ml-2">
+                                    {reviews.length > 0 ? reviews.length : "234"} reviews
                                 </span>
                             </div>
 
