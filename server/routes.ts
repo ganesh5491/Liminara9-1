@@ -457,9 +457,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const inquiry = await (await getStorage()).createContactInquiry({
-        name,
+        firstName: name.split(' ')[0] || "Guest",
+        lastName: name.split(' ').slice(1).join(' ') || "User",
         email,
-        subject: subject || "No Subject",
+        inquiryType: subject || "No Subject",
         message,
         status: "new",
       });

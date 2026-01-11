@@ -907,11 +907,12 @@ export class MySQLStorage implements IStorage {
     
     await this.pool.execute(`
       INSERT INTO product_reviews (
-        id, product_id, user_id, user_name, rating, comment, images, is_verified, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        id, product_id, user_id, user_name, rating, comment, images, is_verified, status, title, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       id, review.productId, review.userId, review.userName, review.rating,
-      review.comment, JSON.stringify(review.images || []), review.isVerified || false, now, now
+      review.comment, JSON.stringify(review.images || []), review.isVerified || false,
+      review.status || 'approved', review.title || null, now, now
     ]);
     
     return {
@@ -923,6 +924,11 @@ export class MySQLStorage implements IStorage {
       comment: review.comment,
       images: review.images || [],
       isVerified: review.isVerified || false,
+      status: review.status || 'approved',
+      title: review.title || null,
+      adminReply: null,
+      adminReplyBy: null,
+      adminReplyAt: null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -931,7 +937,7 @@ export class MySQLStorage implements IStorage {
   // Product Questions
   async getProductQuestions(productId: string): Promise<ProductQuestion[]> {
     const [rows] = await this.pool.execute(`
-      SELECT * FROM product_questions WHERE product_id = ? AND is_public = 1 ORDER BY created_at DESC
+      SELECT * FROM product_questions WHERE product_id = ? AND (is_public = 1 OR status = 'pending') ORDER BY created_at DESC
     `, [productId]);
     
     return (rows as any[]).map(row => ({
@@ -943,6 +949,7 @@ export class MySQLStorage implements IStorage {
       answeredBy: row.answered_by,
       answeredAt: this.parseDate(row.answered_at),
       isPublic: Boolean(row.is_public),
+      status: row.status,
       createdAt: this.parseDate(row.created_at),
       updatedAt: this.parseDate(row.updated_at)
     }));
@@ -955,13 +962,13 @@ export class MySQLStorage implements IStorage {
     await this.pool.execute(`
       INSERT INTO product_questions (
         id, product_id, user_id, user_name, user_email, question, answer,
-        answered_by, answered_at, is_public, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        answered_by, answered_at, is_public, status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       id, question.productId, question.userId, question.userName, question.userEmail,
       question.question, question.answer || null, question.answeredBy || null, 
       question.answeredAt ? this.formatDate(question.answeredAt) : null,
-      question.isPublic !== false, now, now
+      question.isPublic !== false, question.status || 'pending', now, now
     ]);
     
     return {
@@ -975,6 +982,7 @@ export class MySQLStorage implements IStorage {
       answeredBy: question.answeredBy || null,
       answeredAt: question.answeredAt || null,
       isPublic: question.isPublic !== false,
+      status: question.status || 'pending',
       createdAt: new Date(),
       updatedAt: new Date()
     };

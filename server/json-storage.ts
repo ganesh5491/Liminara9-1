@@ -618,9 +618,14 @@ export class JSONStorage implements IStorage {
     const newReview: ProductReview = {
       id: crypto.randomUUID(),
       ...review,
+      title: review.title ?? null,
       userId: review.userId ?? null,
       images: review.images ?? null,
       isVerified: review.isVerified ?? false,
+      status: review.status ?? "approved",
+      adminReply: null,
+      adminReplyBy: null,
+      adminReplyAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -633,7 +638,7 @@ export class JSONStorage implements IStorage {
   async getProductQuestions(productId: string): Promise<ProductQuestion[]> {
     await this.ensureDataLoaded();
     return Array.from(this.productQuestions.values())
-      .filter(question => question.productId === productId && question.isPublic === true)
+      .filter(question => question.productId === productId && (question.isPublic === true || question.status === 'pending'))
       .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
   }
 
@@ -648,6 +653,7 @@ export class JSONStorage implements IStorage {
       answeredBy: question.answeredBy ?? null,
       answeredAt: question.answeredAt ?? null,
       isPublic: question.isPublic ?? true,
+      status: question.status ?? "pending",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
