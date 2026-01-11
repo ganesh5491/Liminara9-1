@@ -74,6 +74,7 @@ export default function Navigation({ onCartClick = () => {}, onWishlistClick = (
   /* ---------------- SCROLL STATE ---------------- */
   const [isScrolled,setIsScrolled]=useState(false);
   const [isMobileMenu,setIsMobileMenu]=useState(false);
+  const isHomePage = location.pathname === "/";
 
   useEffect(()=>{
     const sc=()=>setIsScrolled(window.scrollY>50);
@@ -83,7 +84,7 @@ export default function Navigation({ onCartClick = () => {}, onWishlistClick = (
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled ? "bg-white/80 backdrop-blur-lg shadow-md py-4" : "bg-transparent py-6"
+      (isScrolled || !isHomePage) ? "bg-white/80 backdrop-blur-lg shadow-md py-4" : "bg-transparent py-6"
     }`}>
       <nav className="max-w-7xl mx-auto px-6 md:px-10 flex justify-between items-center">
 
