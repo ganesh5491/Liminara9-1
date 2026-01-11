@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { insertProductReviewSchema, insertProductQuestionSchema } from "@shared/schema";
 import { parsePrice, formatCurrency } from "@/lib/priceUtils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
