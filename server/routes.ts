@@ -3406,6 +3406,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Admin and Delivery Dashboard routes
   registerAdminRoutes(app);
 
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const reviews = await (await getStorage()).getProductReviews(req.params.id);
+      res.json(reviews || []);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.get("/api/products/:id/questions", async (req, res) => {
+    try {
+      const questions = await (await getStorage()).getProductQuestions(req.params.id);
+      res.json(questions || []);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
