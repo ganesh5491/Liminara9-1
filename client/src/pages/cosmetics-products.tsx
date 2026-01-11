@@ -713,7 +713,7 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSelectedProduct(null);
+                    onClose();
                     navigate(`/product-liminara/${product.id}`);
                   }}
                   className="flex-1 h-16 rounded-2xl border-2 border-[#8B7355] text-[#8B7355] font-black text-lg uppercase tracking-widest hover:bg-[#8B7355]/5 transition-all min-w-[140px]"
