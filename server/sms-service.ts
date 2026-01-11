@@ -63,7 +63,7 @@ async function sendViaFast2SMS(phone: string, message: string): Promise<SMSResul
 
   const data = {
     route: 'v3',
-    sender_id: 'INDOSAGA',
+    sender_id: 'liminara',
     message: message,
     language: 'english',
     flash: 0,

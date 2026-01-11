@@ -37,7 +37,7 @@ This palette creates a bright, airy experience while maintaining the premium tea
 
 ### Step 1: Create Theme Variables File
 
-Create a new file: `client/src/styles/theme-indosaga-light.css`
+Create a new file: `client/src/styles/theme-liminara-light.css`
 
 ```css
 /* Liminara cosmatics - Light Theme Variables */
@@ -79,14 +79,14 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
 }
 
 /* Light Theme Application */
-.theme-indosaga-light body {
+.theme-liminara-light body {
   background: var(--is-bg-light);
   color: var(--is-text-primary-light);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Card Components */
-.theme-indosaga-light .card {
+.theme-liminara-light .card {
   background: var(--is-surface-light);
   backdrop-filter: blur(var(--is-frost-blur-light));
   border-radius: var(--is-radius-light);
@@ -95,13 +95,13 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.theme-indosaga-light .card:hover {
+.theme-liminara-light .card:hover {
   box-shadow: var(--is-shadow-hover-light);
   transform: translateY(-2px);
 }
 
 /* Button Components */
-.theme-indosaga-light .btn-primary {
+.theme-liminara-light .btn-primary {
   background: var(--is-cta-bg-light);
   color: var(--is-cta-text-light);
   border-radius: 10px;
@@ -111,13 +111,13 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
   transition: all 0.3s ease;
 }
 
-.theme-indosaga-light .btn-primary:hover {
+.theme-liminara-light .btn-primary:hover {
   background: var(--is-cta-hover-light);
   box-shadow: var(--is-shadow-hover-light);
   transform: translateY(-1px);
 }
 
-.theme-indosaga-light .btn-secondary {
+.theme-liminara-light .btn-secondary {
   background: transparent;
   color: var(--is-teak-deep);
   border: 2px solid var(--is-teak-medium);
@@ -127,13 +127,13 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
   transition: all 0.3s ease;
 }
 
-.theme-indosaga-light .btn-secondary:hover {
+.theme-liminara-light .btn-secondary:hover {
   background: var(--is-teak-light);
   border-color: var(--is-teak-deep);
 }
 
 /* Decorative Accent Band */
-.theme-indosaga-light .accent-band {
+.theme-liminara-light .accent-band {
   height: 6px;
   background: linear-gradient(90deg, var(--is-accent-cream-light), var(--is-accent-gold-light), var(--is-accent-cream-light));
   border-radius: 3px;
@@ -141,7 +141,7 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
 }
 
 /* Navigation */
-.theme-indosaga-light nav {
+.theme-liminara-light nav {
   background: var(--is-surface-light);
   backdrop-filter: blur(var(--is-frost-blur-light));
   border-bottom: 1px solid var(--is-border-light);
@@ -149,7 +149,7 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
 }
 
 /* Product Cards */
-.theme-indosaga-light .product-card {
+.theme-liminara-light .product-card {
   background: var(--is-surface-light);
   border: 1px solid var(--is-border-light);
   border-radius: var(--is-radius-light);
@@ -157,22 +157,22 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
   transition: all 0.3s ease;
 }
 
-.theme-indosaga-light .product-card:hover {
+.theme-liminara-light .product-card:hover {
   border-color: var(--is-teak-medium);
   box-shadow: var(--is-shadow-hover-light);
 }
 
 /* Footer */
-.theme-indosaga-light footer {
+.theme-liminara-light footer {
   background: linear-gradient(180deg, var(--is-surface-light), var(--is-teak-light));
   border-top: 2px solid var(--is-border-light);
   color: var(--is-text-secondary-light);
 }
 
 /* Input Fields */
-.theme-indosaga-light input,
-.theme-indosaga-light textarea,
-.theme-indosaga-light select {
+.theme-liminara-light input,
+.theme-liminara-light textarea,
+.theme-liminara-light select {
   background: var(--is-surface-light);
   border: 1px solid var(--is-border-light);
   color: var(--is-text-primary-light);
@@ -180,9 +180,9 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.theme-indosaga-light input:focus,
-.theme-indosaga-light textarea:focus,
-.theme-indosaga-light select:focus {
+.theme-liminara-light input:focus,
+.theme-liminara-light textarea:focus,
+.theme-liminara-light select:focus {
   border-color: var(--is-teak-deep);
   box-shadow: 0 0 0 3px rgba(196, 165, 123, 0.2);
   outline: none;
@@ -200,11 +200,11 @@ Create a new file: `client/src/styles/theme-indosaga-light.css`
    mkdir -p client/src/styles
    ```
 
-2. Create the theme file at `client/src/styles/theme-indosaga-light.css` with the CSS variables above
+2. Create the theme file at `client/src/styles/theme-liminara-light.css` with the CSS variables above
 
 3. Import the theme in your main entry point (`client/src/main.tsx` or `client/src/index.css`):
    ```typescript
-   import './styles/theme-indosaga-light.css';
+   import './styles/theme-liminara-light.css';
    ```
 
 ### Step 2: Create Theme Context
@@ -226,19 +226,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem('indosaga-theme');
+    const saved = localStorage.getItem('liminara-theme');
     return (saved as Theme) || 'light';
   });
 
   useEffect(() => {
     // Remove old theme class
-    document.body.classList.remove('theme-indosaga-light', 'theme-indosaga-dark');
+    document.body.classList.remove('theme-liminara-light', 'theme-liminara-dark');
     
     // Add new theme class
-    document.body.classList.add(`theme-indosaga-${theme}`);
+    document.body.classList.add(`theme-liminara-${theme}`);
     
     // Save to localStorage
-    localStorage.setItem('indosaga-theme', theme);
+    localStorage.setItem('liminara-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -389,7 +389,7 @@ All color combinations meet WCAG AA standards for accessibility.
 
 ### Hero Section
 ```css
-.theme-indosaga-light .hero {
+.theme-liminara-light .hero {
   background: linear-gradient(180deg, var(--is-bg-light) 0%, var(--is-teak-light) 100%);
   padding: 4rem 2rem;
 }
@@ -397,13 +397,13 @@ All color combinations meet WCAG AA standards for accessibility.
 
 ### Category Tiles
 ```css
-.theme-indosaga-light .category-tile {
+.theme-liminara-light .category-tile {
   background: var(--is-surface-light);
   border: 2px solid var(--is-border-light);
   transition: all 0.3s ease;
 }
 
-.theme-indosaga-light .category-tile:hover {
+.theme-liminara-light .category-tile:hover {
   border-color: var(--is-teak-medium);
   background: linear-gradient(135deg, var(--is-surface-light), var(--is-teak-light));
 }
@@ -411,12 +411,12 @@ All color combinations meet WCAG AA standards for accessibility.
 
 ### Featured Products
 ```css
-.theme-indosaga-light .featured-product {
+.theme-liminara-light .featured-product {
   background: var(--is-surface-light);
   box-shadow: var(--is-shadow-light);
 }
 
-.theme-indosaga-light .featured-product .price {
+.theme-liminara-light .featured-product .price {
   color: var(--is-teak-deep);
   font-weight: 700;
   font-size: 1.5rem;
@@ -425,7 +425,7 @@ All color combinations meet WCAG AA standards for accessibility.
 
 ### Trust Bar / Footer
 ```css
-.theme-indosaga-light .trust-bar {
+.theme-liminara-light .trust-bar {
   background: var(--is-accent-cream-light);
   border-top: 1px solid var(--is-border-light);
   border-bottom: 1px solid var(--is-border-light);
@@ -489,7 +489,7 @@ All color combinations meet WCAG AA standards for accessibility.
 ## 🔧 Customization Guide
 
 ### Adjusting Colors
-To customize the color palette, edit the CSS variables in `theme-indosaga-light.css`:
+To customize the color palette, edit the CSS variables in `theme-liminara-light.css`:
 
 ```css
 :root {
@@ -501,7 +501,7 @@ To customize the color palette, edit the CSS variables in `theme-indosaga-light.
 ```
 
 ### Adding Dark Theme
-To create a matching dark theme, create `theme-indosaga-dark.css` with darker equivalents:
+To create a matching dark theme, create `theme-liminara-dark.css` with darker equivalents:
 
 ```css
 :root {

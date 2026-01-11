@@ -148,7 +148,7 @@ export default function ReceiptModal({ isOpen, onClose, orderData }: ReceiptModa
           <h3 style="color: #8B4513; margin-bottom: 10px;">Important Instructions</h3>
           <ul style="font-size: 12px; margin-bottom: 20px;">
             <li>• <strong>Delivery Timeline:</strong> Your furniture will be delivered within 7-14 business days.</li>
-            <li>• <strong>Contact for Queries:</strong> Call +91 88650 09032 or email info@indosaga.com</li>
+            <li>• <strong>Contact for Queries:</strong> Call +91 88650 09032 or email info@liminara.com</li>
             <li>• <strong>Inspection:</strong> Please inspect all items upon delivery before signing receipt.</li>
             <li>• <strong>Assembly:</strong> Free assembly service included with all furniture items.</li>
             <li>• <strong>Payment (COD):</strong> Please keep exact change ready at the time of delivery.</li>
@@ -186,8 +186,8 @@ export default function ReceiptModal({ isOpen, onClose, orderData }: ReceiptModa
           <div style="text-align: center; margin-bottom: 20px; border-top: 2px solid #8B4513; padding-top: 15px;">
             <p style="font-weight: bold; color: #8B4513;">Liminara cosmatics Pvt. Ltd.</p>
             <p style="font-size: 12px;">123 Furniture Street, Balewadi, Pune - 411045, Maharashtra</p>
-            <p style="font-size: 12px;">Phone: +91 88650 09032 | Email: info@indosaga.com</p>
-            <p style="font-size: 12px;">Website: www.indosaga.com | GSTIN: 27AAAAA0000A1Z5</p>
+            <p style="font-size: 12px;">Phone: +91 88650 09032 | Email: info@liminara.com</p>
+            <p style="font-size: 12px;">Website: www.liminara.com | GSTIN: 27AAAAA0000A1Z5</p>
             <p style="font-size: 12px; color: #D2691E; margin-top: 10px;"><strong>Thank you for choosing Liminara Premium Teak Furniture!</strong></p>
           </div>
           <p style="margin-top: 20px; font-size: 10px; text-align: center;">This is a computer-generated receipt.</p>
@@ -238,7 +238,7 @@ export default function ReceiptModal({ isOpen, onClose, orderData }: ReceiptModa
             <div className="text-center border-b border-gray-300 pb-4 mb-6 relative z-10 bg-white bg-opacity-90 rounded-lg p-4">
               <div className="flex items-center justify-center mb-2">
                 <img
-                  src="/indosaga-logo.jpg"
+                  src="/liminara-logo.jpg"
                   alt="Liminara Logo"
                   className="h-12 w-12 mr-3"
                 />
@@ -328,7 +328,7 @@ export default function ReceiptModal({ isOpen, onClose, orderData }: ReceiptModa
               <h4 className="font-semibold text-darkBrown mb-3">Important Instructions</h4>
               <div className="space-y-2 text-sm text-gray-700">
                 <p>• <strong>Delivery Timeline:</strong> Your furniture will be delivered within 7-14 business days.</p>
-                <p>• <strong>Contact for Queries:</strong> Call +91 88650 09032 or email info@indosaga.com</p>
+                <p>• <strong>Contact for Queries:</strong> Call +91 88650 09032 or email info@liminara.com</p>
                 <p>• <strong>Inspection:</strong> Please inspect all items upon delivery before signing receipt.</p>
                 <p>• <strong>Assembly:</strong> Free assembly service included with all furniture items.</p>
                 <p>• <strong>Payment (COD):</strong> Please keep exact change ready at the time of delivery.</p>
@@ -369,8 +369,8 @@ export default function ReceiptModal({ isOpen, onClose, orderData }: ReceiptModa
               <div className="text-center space-y-1 text-sm text-gray-600">
                 <p className="font-semibold text-darkBrown">Liminara cosmatics Pvt. Ltd.</p>
                 <p>123 Furniture Street, Balewadi, Pune - 411045, Maharashtra</p>
-                <p>Phone: +91 88650 09032 | Email: info@indosaga.com</p>
-                <p>Website: www.indosaga.com | GSTIN: 27AAAAA0000A1Z5</p>
+                <p>Phone: +91 88650 09032 | Email: info@liminara.com</p>
+                <p>Website: www.liminara.com | GSTIN: 27AAAAA0000A1Z5</p>
                 <p className="text-xs mt-2 text-amber-600 font-medium">Thank you for choosing Liminara Premium Teak Furniture!</p>
               </div>
             </div>

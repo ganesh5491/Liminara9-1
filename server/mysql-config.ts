@@ -1,4 +1,4 @@
-// MySQL Configuration for IndoSaga Database Migration
+// MySQL Configuration for liminara Database Migration
 // This file contains the MySQL setup and fallback configuration
 
 import { MySQLStorage } from './mysql-storage';

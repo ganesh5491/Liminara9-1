@@ -154,7 +154,7 @@ export default function HelpdeskModal({ isOpen, onClose }: HelpdeskModalProps) {
                   <Mail className="w-4 h-4 text-accent" />
                   <div>
                     <div className="font-medium text-sm">Email Support</div>
-                    <div className="text-xs text-gray-600">help@indosaga.com</div>
+                    <div className="text-xs text-gray-600">help@liminara.com</div>
                   </div>
                 </div>
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Main Entry Point for IndoSaga PHP Application
+ * Main Entry Point for liminara PHP Application
  * Handles both API and static file serving
  */
 

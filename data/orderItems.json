@@ -214,5 +214,21 @@
     "quantity": 1,
     "price": "649",
     "createdAt": "2026-01-07T03:59:51.164Z"
+  },
+  {
+    "id": "30e632a8-6a5f-4b78-b621-54afb08e4f5d",
+    "orderId": "f72d49d9-41ec-4357-bead-e5def28f1a3e",
+    "productId": "cos-002",
+    "quantity": 1,
+    "price": "1799",
+    "createdAt": "2026-01-11T08:58:53.288Z"
+  },
+  {
+    "id": "3cd42d80-5dff-442d-a259-b81e81f589a9",
+    "orderId": "f72d49d9-41ec-4357-bead-e5def28f1a3e",
+    "productId": "cos-001",
+    "quantity": 1,
+    "price": "2499",
+    "createdAt": "2026-01-11T08:58:53.288Z"
   }
 ]

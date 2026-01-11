@@ -138,7 +138,7 @@ export default function OrderSuccessPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-8 relative" 
          style={{ 
-           backgroundImage: 'url(/indosaga-logo.png)', 
+           backgroundImage: 'url(/liminara-logo.png)', 
            backgroundSize: '150px', 
            backgroundRepeat: 'no-repeat', 
            backgroundPosition: 'center center'
@@ -149,7 +149,7 @@ export default function OrderSuccessPage() {
         <div className="text-center mb-8">
           <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-8 text-white mb-6 relative" 
                style={{ 
-                 backgroundImage: 'url(/indosaga-logo.png)', 
+                 backgroundImage: 'url(/liminara-logo.png)', 
                  backgroundSize: '80px', 
                  backgroundRepeat: 'no-repeat', 
                  backgroundPosition: 'center center'
@@ -326,7 +326,7 @@ export default function OrderSuccessPage() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center relative p-6 rounded-xl"
              style={{ 
-               backgroundImage: 'url(/indosaga-logo.png)', 
+               backgroundImage: 'url(/liminara-logo.png)', 
                backgroundSize: '100px', 
                backgroundRepeat: 'no-repeat', 
                backgroundPosition: 'center center'

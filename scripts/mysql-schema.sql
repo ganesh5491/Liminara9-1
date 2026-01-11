@@ -1,4 +1,4 @@
--- MySQL Schema for IndoSaga Database
+-- MySQL Schema for liminara Database
 -- Optimized version with enhanced features
 
 -- Sessions table
