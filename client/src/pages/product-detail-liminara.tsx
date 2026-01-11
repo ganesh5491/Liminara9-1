@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,40 +16,56 @@ import {
     Minus,
     Plus,
     CheckCircle2,
+    Sparkles,
 } from "lucide-react";
-
-const productData = {
-    id: 1,
-    name: "Vitamin C Brightening Serum",
-    tagline: "Radiance Booster & Pigmentation Reducer",
-    price: 1000,
-    originalPrice: 1500,
-    discount: "Save ₹500.00",
-    description: "Stable vitamin C formula to even skin tone and boost radiance. 20% ethyl ascorbic acid with ferulic acid and vitamin E for enhanced stability and brightening power.",
-    keyFeatures: [
-        "Premium grade teak wood construction",
-        "Handcrafted by master artisans",
-        "Lifetime warranty coverage",
-        "Expert installation included"
-    ],
-    images: [
-        "/placeholder-product-1.jpg",
-        "/placeholder-product-2.jpg",
-        "/placeholder-product-3.jpg",
-    ],
-    rating: 4.8,
-    reviewCount: 342,
-    inStock: true,
-};
+import type { Product } from "@shared/schema";
 
 export default function ProductDetailPage() {
     const { id } = useParams();
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
+    const { data: product, isLoading } = useQuery<Product>({
+        queryKey: [`/api/products/${id}`],
+    });
+
     const handleQuantityChange = (delta: number) => {
         setQuantity(Math.max(1, quantity + delta));
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#FFFAF5] flex items-center justify-center">
+                <div className="animate-pulse text-[#4B3A2F] font-display text-2xl">Loading luxury care...</div>
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="min-h-screen bg-[#FFFAF5] flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-display font-bold text-[#3B2D25] mb-4">Product Not Found</h2>
+                    <Link to="/cosmetics">
+                        <Button className="bg-[#4B3A2F] text-white">Back to Collection</Button>
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    const images = product.images && product.images.length > 0 ? product.images : [product.imageUrl || "/placeholder-product.jpg"];
+    const originalPrice = parseFloat(product.originalPrice || "0");
+    const currentPrice = parseFloat(product.price || "0");
+    const hasDiscount = originalPrice > currentPrice;
+    const discountText = hasDiscount ? `Save ₹${(originalPrice - currentPrice).toFixed(2)}` : null;
+
+    // Parse specifications if it's a string or object
+    const specs = typeof product.specifications === 'string' 
+        ? JSON.parse(product.specifications) 
+        : product.specifications || {};
+
+    const keyFeatures = Array.isArray(product.tags) ? product.tags : [];
 
     return (
         <div className="min-h-screen bg-[#FFFAF5]">
@@ -64,12 +81,11 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-bold text-[#4B3A2F]/60">
                     <Link to="/" className="hover:text-[#4B3A2F]">Home</Link>
-                    <Link to="/collection" className="hover:text-[#4B3A2F]">Collection</Link>
+                    <Link to="/cosmetics" className="hover:text-[#4B3A2F]">Collection</Link>
                 </div>
                 <div className="flex items-center gap-6">
                     <button className="text-[#4B3A2F] hover:opacity-70"><Heart className="h-5 w-5" /></button>
                     <button className="text-[#4B3A2F] hover:opacity-70"><ShoppingCart className="h-5 w-5" /></button>
-                    <button className="text-[#4B3A2F] hover:opacity-70"><Plus className="h-5 w-5 rotate-45" /></button>
                 </div>
             </header>
 
@@ -85,8 +101,8 @@ export default function ProductDetailPage() {
                                 className="relative aspect-square bg-white rounded-[2.5rem] shadow-sm border border-[#E3C7A0]/20 flex items-center justify-center overflow-hidden group"
                             >
                                 <img
-                                    src={productData.images[selectedImage]}
-                                    alt={productData.name}
+                                    src={images[selectedImage]}
+                                    alt={product.name}
                                     className="w-full h-full object-contain p-12 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
                                 <div className="absolute top-8 left-8">
@@ -97,23 +113,13 @@ export default function ProductDetailPage() {
                                 </div>
                                 <div className="absolute bottom-8 left-8">
                                     <Badge className="bg-[#4B3A2F] text-white border-none font-bold text-[10px] px-3 py-1.5 rounded-lg shadow-sm">
-                                        {selectedImage + 1}/{productData.images.length}
+                                        {selectedImage + 1}/{images.length}
                                     </Badge>
-                                </div>
-                                <div className="absolute top-8 right-8 flex flex-col gap-3">
-                                    <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-md text-[#4B3A2F] hover:scale-110 transition-transform"><Heart className="h-5 w-5" /></button>
-                                    <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-md text-[#4B3A2F] hover:scale-110 transition-transform"><Plus className="h-5 w-5 rotate-45" /></button>
-                                </div>
-                                <div className="absolute bottom-8 right-8">
-                                    <Button variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-[#4B3A2F]/20 text-[#4B3A2F] rounded-full px-6 font-bold h-10">
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        360° View
-                                    </Button>
                                 </div>
                             </motion.div>
 
                             <div className="flex gap-4">
-                                {productData.images.map((img, idx) => (
+                                {images.map((img, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(idx)}
@@ -128,42 +134,46 @@ export default function ProductDetailPage() {
                         {/* Right Column: Info */}
                         <div className="pt-4">
                             <h1 className="text-5xl font-display font-black text-[#3B2D25] mb-4 leading-tight">
-                                {productData.name}
+                                {product.name}
                             </h1>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="flex gap-0.5">
                                     {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-4 w-4 fill-[#D4B590] text-[#D4B590]" />)}
                                 </div>
                                 <span className="text-sm font-bold text-[#4B3A2F]/60">
-                                    (4.9 out of 5 stars) {productData.reviewCount} reviews
+                                    (4.9 out of 5 stars) 234 reviews
                                 </span>
                             </div>
 
                             <div className="flex items-baseline gap-4 mb-2">
-                                <span className="text-5xl font-display font-black text-[#3B2D25]">₹{productData.price}.00</span>
-                                <span className="text-2xl text-[#4B3A2F]/30 line-through font-medium">₹{productData.originalPrice}.00</span>
-                                <Badge className="bg-[#E11D48] text-white border-none font-bold px-3 py-1 text-xs rounded-lg">
-                                    {productData.discount}
-                                </Badge>
+                                <span className="text-5xl font-display font-black text-[#3B2D25]">₹{product.price}</span>
+                                {hasDiscount && (
+                                    <span className="text-2xl text-[#4B3A2F]/30 line-through font-medium">₹{product.originalPrice}</span>
+                                )}
+                                {discountText && (
+                                    <Badge className="bg-[#E11D48] text-white border-none font-bold px-3 py-1 text-xs rounded-lg">
+                                        {discountText}
+                                    </Badge>
+                                )}
                             </div>
-                            <p className="text-sm font-bold text-green-600 flex items-center gap-2 mb-10 uppercase tracking-widest">
-                                <CheckCircle2 className="h-4 w-4" />
-                                In Stock
+                            <p className={`text-sm font-bold flex items-center gap-2 mb-10 uppercase tracking-widest ${product.inStock ? "text-green-600" : "text-red-600"}`}>
+                                {product.inStock ? <CheckCircle2 className="h-4 w-4" /> : null}
+                                {product.inStock ? "In Stock" : "Out of Stock"}
                             </p>
 
                             <div className="grid grid-cols-2 gap-4 mb-10">
                                 <div className="p-6 rounded-[2rem] bg-[#FFF4E8] border border-[#D4B590]/30 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-[#D4B590] shadow-sm"><Award className="h-6 w-6" /></div>
                                     <div>
-                                        <p className="text-sm font-bold text-[#3B2D25]">Lifetime Warranty</p>
-                                        <p className="text-[10px] text-[#4B3A2F]/60 font-medium">Premium quality assured</p>
+                                        <p className="text-sm font-bold text-[#3B2D25]">Authentic Product</p>
+                                        <p className="text-[10px] text-[#4B3A2F]/60 font-medium">100% Genuine</p>
                                     </div>
                                 </div>
                                 <div className="p-6 rounded-[2rem] bg-[#FFF4E8] border border-[#D4B590]/30 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
                                     <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-[#D4B590] shadow-sm"><Download className="h-6 w-6 rotate-180" /></div>
                                     <div>
                                         <p className="text-sm font-bold text-[#3B2D25]">Free Delivery</p>
-                                        <p className="text-[10px] text-[#4B3A2F]/60 font-medium">7-15 days nationwide</p>
+                                        <p className="text-[10px] text-[#4B3A2F]/60 font-medium">Above ₹999</p>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +207,7 @@ export default function ProductDetailPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <Tabs defaultValue="description" className="w-full">
                         <TabsList className="w-full bg-[#FFF4E8] rounded-[2rem] h-20 p-2 gap-4 border border-[#D4B590]/20 shadow-sm">
-                            {["Description", "Specifications", "Care Guide", "Reviews", "Q&A"].map((tab) => (
+                            {["Description", "Specifications", "Care Guide", "Reviews"].map((tab) => (
                                 <TabsTrigger
                                     key={tab}
                                     value={tab.toLowerCase().replace(" ", "")}
@@ -215,22 +225,47 @@ export default function ProductDetailPage() {
                                         <Plus className="h-6 w-6 text-[#D4B590] rotate-45" />
                                         <h2 className="text-3xl font-display font-black text-[#3B2D25]">Product Description</h2>
                                     </div>
-                                    <p className="text-lg text-[#4B3A2F]/80 leading-relaxed mb-12 font-medium italic">
-                                        {productData.description}
-                                    </p>
-                                    <div className="space-y-6">
-                                        <h3 className="text-xl font-bold text-[#3B2D25] uppercase tracking-widest mb-4">Key Features:</h3>
-                                        <div className="space-y-4">
-                                            {productData.keyFeatures.map((feature, i) => (
-                                                <div key={i} className="flex items-center gap-4 group">
-                                                    <div className="w-10 h-10 rounded-2xl bg-[#FFF4E8] flex items-center justify-center text-[#D4B590] group-hover:scale-110 transition-transform shadow-sm">
-                                                        {i === 0 ? <Award className="h-5 w-5" /> : i === 1 ? <CheckCircle2 className="h-5 w-5" /> : i === 2 ? <Plus className="h-5 w-5 rotate-45" /> : <Plus className="h-5 w-5 rotate-45" />}
+                                    <div className="prose prose-stone max-w-none text-lg text-[#4B3A2F]/80 leading-relaxed mb-12 font-medium" 
+                                         dangerouslySetInnerHTML={{ __html: product.fullDescription || product.description || "" }} 
+                                    />
+                                    {keyFeatures.length > 0 && (
+                                        <div className="space-y-6">
+                                            <h3 className="text-xl font-bold text-[#3B2D25] uppercase tracking-widest mb-4">Key Features:</h3>
+                                            <div className="space-y-4">
+                                                {keyFeatures.map((feature, i) => (
+                                                    <div key={i} className="flex items-center gap-4 group">
+                                                        <div className="w-10 h-10 rounded-2xl bg-[#FFF4E8] flex items-center justify-center text-[#D4B590] group-hover:scale-110 transition-transform shadow-sm">
+                                                            <CheckCircle2 className="h-5 w-5" />
+                                                        </div>
+                                                        <span className="text-lg text-[#4B3A2F] font-bold">{feature}</span>
                                                     </div>
-                                                    <span className="text-lg text-[#4B3A2F] font-bold">{feature}</span>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
+                                    )}
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="specifications">
+                                <Card className="p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        {Object.entries(specs).map(([key, value]) => (
+                                            <div key={key} className="border-b border-[#E3C7A0]/20 pb-4">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4B590] mb-1">{key}</p>
+                                                <p className="text-lg font-bold text-[#3B2D25]">{String(value)}</p>
+                                            </div>
+                                        ))}
                                     </div>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="careguide">
+                                <Card className="p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <Sparkles className="h-6 w-6 text-[#D4B590]" />
+                                        <h2 className="text-3xl font-display font-black text-[#3B2D25]">Care & Usage</h2>
+                                    </div>
+                                    <p className="text-lg text-[#4B3A2F]/80 leading-relaxed font-medium">
+                                        {product.careGuide || "Use daily for best results. Apply to clean skin."}
+                                    </p>
                                 </Card>
                             </TabsContent>
                         </div>
@@ -241,10 +276,12 @@ export default function ProductDetailPage() {
             {/* You Might Also Like */}
             <section className="py-24 bg-[#FFF4E8]/30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-4xl font-display font-black text-[#3B2D25] mb-12">You Might Also Like</h2>
-                    <Button variant="outline" className="bg-[#4B3A2F] hover:bg-[#3B2D25] text-[#F5D7B0] border-none px-12 h-14 rounded-xl font-black text-sm uppercase tracking-widest shadow-xl transition-all">
-                        View All Products
-                    </Button>
+                    <h2 className="text-4xl font-display font-black text-[#3B2D25] mb-12">Related Products</h2>
+                    <Link to="/cosmetics">
+                        <Button variant="outline" className="bg-[#4B3A2F] hover:bg-[#3B2D25] text-[#F5D7B0] border-none px-12 h-14 rounded-xl font-black text-sm uppercase tracking-widest shadow-xl transition-all">
+                            View All Products
+                        </Button>
+                    </Link>
                 </div>
             </section>
         </div>

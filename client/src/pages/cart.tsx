@@ -204,12 +204,17 @@ export default function Cart() {
                       </div>
 
                       <div className="flex-1">
-                        <h3 className="text-xl font-display font-semibold text-darkBrown mb-2" data-testid={`cart-item-name-${item.id}`}>
-                          {item.product?.name}
-                        </h3>
+                        <Link to={`/product-liminara/${item.product?.id || item.productId}`}>
+                          <h3 className="text-xl font-display font-semibold text-darkBrown mb-2 hover:text-primary transition-colors cursor-pointer" data-testid={`cart-item-name-${item.id}`}>
+                            {item.product?.name}
+                          </h3>
+                        </Link>
                         <p className="text-gray-600 mb-4 line-clamp-2">
                           {item.product?.description}
                         </p>
+                        <Link to={`/product-liminara/${item.product?.id || item.productId}`} className="text-sm font-bold text-primary hover:underline mb-4 inline-block">
+                          View Details
+                        </Link>
 
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           <div className="flex items-center space-x-4">
