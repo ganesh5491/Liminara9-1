@@ -176,9 +176,15 @@ export default function CheckoutPage() {
         try {
           const item = JSON.parse(buyNowData);
           setIsDirectCheckout(true);
-          setOrderItems([item]);
-          setOrderTotal(item.total);
-          console.log('Successfully Loaded Direct Checkout Item:', item);
+          const price = parsePrice(item.product?.price || item.price);
+          const updatedItem = {
+            ...item,
+            price: price,
+            total: price * item.quantity
+          };
+          setOrderItems([updatedItem]);
+          setOrderTotal(updatedItem.total);
+          console.log('Successfully Loaded Direct Checkout Item:', updatedItem);
         } catch (e) {
           console.error('Failed to parse buyNowItem', e);
         }

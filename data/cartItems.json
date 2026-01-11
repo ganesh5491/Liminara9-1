@@ -28,17 +28,10 @@
     "createdAt": "2025-11-29T13:55:25.037Z"
   },
   {
-    "id": "51f71dfc-77fa-4e5d-98ce-dbfa7ac850ad",
+    "id": "f046c9c1-89dd-4a19-8b7d-4664e84dcf8d",
     "userId": "ea48ab63-d3c3-4a31-99a7-0047ee1ab9d5",
-    "productId": "cos-003",
-    "quantity": 2,
-    "createdAt": "2026-01-11T12:05:06.412Z"
-  },
-  {
-    "id": "06c0ab21-f818-46a0-a3de-ce6521b359a8",
-    "userId": "ea48ab63-d3c3-4a31-99a7-0047ee1ab9d5",
-    "productId": "cos-001",
+    "productId": "cos-004",
     "quantity": 1,
-    "createdAt": "2026-01-11T12:05:19.474Z"
+    "createdAt": "2026-01-11T12:17:15.783Z"
   }
 ]

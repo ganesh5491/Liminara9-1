@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductReviewSchema, insertProductQuestionSchema } from "@shared/schema";
+import { parsePrice, formatCurrency } from "@/lib/priceUtils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, ProductReview, ProductQuestion } from "@shared/schema";
@@ -300,11 +300,12 @@ export default function ProductDetailPage() {
                                 <Button 
                                     onClick={() => {
                                         if (product) {
+                                            const price = parsePrice(product.price);
                                             const buyNowItem = {
                                                 product: product,
                                                 quantity: quantity,
-                                                price: parseFloat(product.price),
-                                                total: parseFloat(product.price) * quantity
+                                                price: price,
+                                                total: price * quantity
                                             };
                                             localStorage.setItem('checkoutType', 'direct');
                                             localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));

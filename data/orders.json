@@ -479,5 +479,25 @@
     "trackingId": null,
     "createdAt": "2026-01-11T08:58:53.254Z",
     "updatedAt": "2026-01-11T08:58:53.254Z"
+  },
+  {
+    "id": "35c33a6c-d6d7-488e-973b-29428238a351",
+    "userId": "ea48ab63-d3c3-4a31-99a7-0047ee1ab9d5",
+    "total": "2",
+    "paymentMethod": "cod",
+    "customerName": "ganesh",
+    "customerPhone": "9028441589",
+    "customerEmail": "ganeshkale030303@gmail.com",
+    "shippingAddress": "bhumkar chowk, pune, Pune, Maharashtra",
+    "pincode": "411057",
+    "status": "pending",
+    "paymentId": null,
+    "paymentStatus": "pending",
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null,
+    "trackingId": null,
+    "createdAt": "2026-01-11T12:16:37.701Z",
+    "updatedAt": "2026-01-11T12:16:37.701Z"
   }
 ]

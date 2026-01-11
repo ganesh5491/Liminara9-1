@@ -230,5 +230,13 @@
     "quantity": 1,
     "price": "2499",
     "createdAt": "2026-01-11T08:58:53.288Z"
+  },
+  {
+    "id": "85de2c84-b319-4a10-84d1-107dca1565cb",
+    "orderId": "35c33a6c-d6d7-488e-973b-29428238a351",
+    "productId": "cos-001",
+    "quantity": 1,
+    "price": "2",
+    "createdAt": "2026-01-11T12:16:37.707Z"
   }
 ]
