@@ -834,6 +834,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
+  // Product Review routes
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const storage = await getStorage();
+      const reviews = await storage.getProductReviews(req.params.id);
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.post("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const storage = await getStorage();
+      const reviewData = insertProductReviewSchema.parse({
+        ...req.body,
+        productId: req.params.id,
+      });
+      const review = await storage.createProductReview(reviewData);
+      res.status(201).json(review);
+    } catch (error) {
+      console.error("Review error:", error);
+      res.status(400).json({ message: "Invalid review data" });
+    }
+  });
+
+  // Product Q&A routes
+  app.get("/api/products/:id/questions", async (req, res) => {
+    try {
+      const storage = await getStorage();
+      const questions = await storage.getProductQuestions(req.params.id);
+      res.json(questions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
+  app.post("/api/products/:id/questions", async (req, res) => {
+    try {
+      const storage = await getStorage();
+      const questionData = insertProductQuestionSchema.parse({
+        ...req.body,
+        productId: req.params.id,
+      });
+      const question = await storage.createProductQuestion(questionData);
+      res.status(201).json(question);
+    } catch (error) {
+      console.error("Question error:", error);
+      res.status(400).json({ message: "Invalid question data" });
+    }
+  });
+
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {

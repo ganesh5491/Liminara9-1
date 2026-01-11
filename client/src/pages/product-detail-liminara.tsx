@@ -272,11 +272,48 @@ export default function ProductDetailPage() {
                             </div>
 
                             <div className="flex gap-4">
-                                <Button className="flex-1 h-16 rounded-2xl bg-[#4B3A2F] hover:bg-[#3B2D25] text-[#F5D7B0] font-black text-lg uppercase tracking-widest shadow-xl transition-all active:scale-[0.98]">
+                                <Button 
+                                    onClick={() => {
+                                        if (product) {
+                                            const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+                                            const existingItemIndex = localCart.findIndex((item: any) => item.productId === product.id);
+                                            if (existingItemIndex !== -1) {
+                                                localCart[existingItemIndex].quantity += quantity;
+                                            } else {
+                                                localCart.push({
+                                                    id: `local-${product.id}-${Date.now()}`,
+                                                    productId: product.id,
+                                                    quantity: quantity,
+                                                    product: product
+                                                });
+                                            }
+                                            localStorage.setItem('localCart', JSON.stringify(localCart));
+                                            window.dispatchEvent(new Event('cartUpdated'));
+                                            toast({ title: "Added to Cart!", description: `${product.name} added to cart.` });
+                                        }
+                                    }}
+                                    className="flex-1 h-16 rounded-2xl bg-[#4B3A2F] hover:bg-[#3B2D25] text-[#F5D7B0] font-black text-lg uppercase tracking-widest shadow-xl transition-all active:scale-[0.98]"
+                                >
                                     <ShoppingCart className="mr-3 h-5 w-5" />
                                     Add to Cart
                                 </Button>
-                                <Button className="flex-1 h-16 rounded-2xl bg-white border-2 border-[#4B3A2F] text-[#4B3A2F] font-black text-lg uppercase tracking-widest hover:bg-[#4B3A2F]/5 transition-all active:scale-[0.98]">
+                                <Button 
+                                    onClick={() => {
+                                        if (product) {
+                                            const buyNowItem = {
+                                                product: product,
+                                                quantity: quantity,
+                                                price: parseFloat(product.price),
+                                                total: parseFloat(product.price) * quantity
+                                            };
+                                            localStorage.setItem('checkoutType', 'direct');
+                                            localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
+                                            localStorage.setItem('checkout_pending', 'true');
+                                            window.location.href = '/checkout';
+                                        }
+                                    }}
+                                    className="flex-1 h-16 rounded-2xl bg-white border-2 border-[#4B3A2F] text-[#4B3A2F] font-black text-lg uppercase tracking-widest hover:bg-[#4B3A2F]/5 transition-all active:scale-[0.98]"
+                                >
                                     <Plus className="mr-3 h-5 w-5" />
                                     Buy Now
                                 </Button>
@@ -384,6 +421,19 @@ export default function ProductDetailPage() {
                                                         />
                                                         <FormField
                                                             control={reviewForm.control}
+                                                            name="title"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Review Title</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input placeholder="Amazing product!" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <FormField
+                                                            control={reviewForm.control}
                                                             name="rating"
                                                             render={({ field }) => (
                                                                 <FormItem>
@@ -400,6 +450,19 @@ export default function ProductDetailPage() {
                                                             name="comment"
                                                             render={({ field }) => (
                                                                 <FormItem>
+                                                                    <FormLabel>Comment</FormLabel>
+                                                                    <FormControl>
+                                                                        <Textarea placeholder="Write your review here..." {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <Button type="submit" className="w-full bg-[#4B3A2F] text-[#F5D7B0]" disabled={reviewMutation.isPending}>
+                                                            {reviewMutation.isPending ? "Submitting..." : "Submit Review"}
+                                                        </Button>
+                                                    </form>
+                                                </Form>
                                                                     <FormLabel>Review</FormLabel>
                                                                     <FormControl>
                                                                         <Textarea placeholder="What did you think of the product?" {...field} />
@@ -441,6 +504,83 @@ export default function ProductDetailPage() {
                                             <HelpCircle className="h-6 w-6 text-[#D4B590]" />
                                             <h2 className="text-3xl font-display font-black text-[#3B2D25]">Product Q&A</h2>
                                         </div>
+                                        <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>Ask a Question</DialogTitle>
+                                                    <DialogDescription>Got a question about this product? Ask away!</DialogDescription>
+                                                </DialogHeader>
+                                                <Form {...questionForm}>
+                                                    <form onSubmit={questionForm.handleSubmit((data) => questionMutation.mutate(data))} className="space-y-4">
+                                                        <FormField
+                                                            control={questionForm.control}
+                                                            name="userName"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Your Name</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input placeholder="John Doe" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <FormField
+                                                            control={questionForm.control}
+                                                            name="question"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>Your Question</FormLabel>
+                                                                    <FormControl>
+                                                                        <Textarea placeholder="How do I use this product?" {...field} />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <Button type="submit" className="w-full bg-[#4B3A2F] text-[#F5D7B0]" disabled={questionMutation.isPending}>
+                                                            {questionMutation.isPending ? "Submitting..." : "Submit Question"}
+                                                        </Button>
+                                                    </form>
+                                                </Form>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {questions.length > 0 ? (
+                                            questions.map((q) => (
+                                                <div key={q.id} className="p-6 rounded-2xl bg-[#FFF4E8]/50 border border-[#D4B590]/10">
+                                                    <div className="flex items-start gap-4 mb-4">
+                                                        <div className="w-10 h-10 rounded-full bg-[#4B3A2F] flex items-center justify-center text-[#F5D7B0] font-bold">
+                                                            {q.userName[0]}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold text-[#3B2D25]">{q.userName}</p>
+                                                            <p className="text-lg text-[#4B3A2F] font-medium mt-1">{q.question}</p>
+                                                        </div>
+                                                    </div>
+                                                    {q.answer && (
+                                                        <div className="ml-14 p-4 rounded-xl bg-white border border-[#D4B590]/20">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Badge className="bg-[#D4B590] text-white text-[10px]">Expert Answer</Badge>
+                                                            </div>
+                                                            <p className="text-[#4B3A2F]/80">{q.answer}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-12">
+                                                <HelpCircle className="h-12 w-12 text-[#E3C7A0]/30 mx-auto mb-4" />
+                                                <p className="text-[#4B3A2F]/60 font-medium">No questions yet. Be the first to ask!</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Card>
+                            </TabsContent>
                                         <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
                                             <DialogTrigger asChild>
                                                 <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>

@@ -561,14 +561,9 @@ export default function ProductDetail() {
   const handleAddToCart = useCallback(async () => {
     if (!product) return;
 
-    // Rapid-click protection
-    if (isAddingToCart || cartCooldown) return;
-
-    setIsAddingToCart(true);
-
-    try {
-      // For authenticated users, use API only
-      if (isAuthenticated && currentUser) {
+    // For authenticated users, use API
+    if (isAuthenticated && currentUser) {
+      try {
         const response = await fetch("/api/cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -586,61 +581,38 @@ export default function ProductDetail() {
           });
           queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
           window.dispatchEvent(new Event('cartUpdated'));
-
-          // Set cooldown
-          setCartCooldown(true);
-          setTimeout(() => setCartCooldown(false), 1000);
           return;
         }
-
-        throw new Error('Failed to add to cart');
+      } catch (error) {
+        console.error("Auth cart error:", error);
       }
-
-      // For guest users only, use localStorage
-      const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
-      const existingItemIndex = localCart.findIndex((item: any) =>
-        item.productId === product.id || item.id === product.id
-      );
-
-      if (existingItemIndex !== -1) {
-        localCart[existingItemIndex].quantity = (localCart[existingItemIndex].quantity || 1) + selectedQuantity;
-      } else {
-        localCart.push({
-          id: `local-${product.id}-${Date.now()}`,
-          productId: product.id,
-          quantity: selectedQuantity,
-          product: {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            description: product.description,
-            images: product.images
-          }
-        });
-      }
-
-      localStorage.setItem('localCart', JSON.stringify(localCart));
-      window.dispatchEvent(new Event('cartUpdated'));
-
-      toast({
-        title: "Added to Cart!",
-        description: `${product.name} has been added to your cart.`,
-      });
-
-      // Set cooldown
-      setCartCooldown(true);
-      setTimeout(() => setCartCooldown(false), 1000);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAddingToCart(false);
     }
-  }, [product, isAuthenticated, currentUser, selectedQuantity, toast, queryClient, isAddingToCart, cartCooldown]);
+
+    // Fallback/Guest: localStorage
+    const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+    const existingItemIndex = localCart.findIndex((item: any) =>
+      item.productId === product.id
+    );
+
+    if (existingItemIndex !== -1) {
+      localCart[existingItemIndex].quantity += selectedQuantity;
+    } else {
+      localCart.push({
+        id: `local-${product.id}-${Date.now()}`,
+        productId: product.id,
+        quantity: selectedQuantity,
+        product: product
+      });
+    }
+
+    localStorage.setItem('localCart', JSON.stringify(localCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    toast({
+      title: "Added to Cart!",
+      description: `${product.name} has been added to your cart.`,
+    });
+  }, [product, isAuthenticated, currentUser, selectedQuantity, toast, queryClient]);
 
   // Separate effect for add to cart trigger
   useEffect(() => {
@@ -658,19 +630,6 @@ export default function ProductDetail() {
   const handleBuyNow = () => {
     if (!product) return;
 
-    // Check if user is authenticated
-    if (!isAuthenticated || !currentUser) {
-      // Store pending action for after login
-      sessionStorage.setItem('pendingAction', 'buy-now');
-      sessionStorage.setItem('pendingProductId', product.id);
-      sessionStorage.setItem('pendingQuantity', selectedQuantity.toString());
-      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
-
-      // Redirect to login
-      window.location.href = '/login';
-      return;
-    }
-
     const buyNowItem = {
       product: product,
       quantity: selectedQuantity,
@@ -680,15 +639,10 @@ export default function ProductDetail() {
 
     localStorage.setItem('checkoutType', 'direct');
     localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
-
-    // Log the data we just set to verify
-    console.log('Buy Now Data Set:', buyNowItem);
-
-    // Explicitly set a flag for checkout page to pick up
     localStorage.setItem('checkout_pending', 'true');
 
-    // Navigate using wouter for SPA transition
-    navigate('/checkout');
+    // Use window.location.href to ensure a clean state for checkout
+    window.location.href = '/checkout';
   };
 
 
