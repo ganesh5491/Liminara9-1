@@ -263,7 +263,13 @@ export default function ProductDetailPage() {
 
                                     <div className="mt-6 pt-4 border-t border-[#E3C7A0]/10 text-center">
                                         <button 
-                                            onClick={() => document.querySelector('[value="reviews"]')?.dispatchEvent(new MouseEvent('click', {bubbles: true}))}
+                                            onClick={() => {
+                                                const reviewsTab = document.querySelector('[value="reviews"]');
+                                                if (reviewsTab) {
+                                                    reviewsTab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    (reviewsTab as HTMLElement).click();
+                                                }
+                                            }}
                                             className="text-sm font-bold text-[#D4B590] hover:text-[#4B3A2F] transition-colors inline-flex items-center gap-1"
                                         >
                                             See customer reviews <span className="text-[10px]">▶</span>
