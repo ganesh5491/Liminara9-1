@@ -309,7 +309,7 @@ export default function ProductDetailPage() {
                                             localStorage.setItem('checkoutType', 'direct');
                                             localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
                                             localStorage.setItem('checkout_pending', 'true');
-                                            window.location.href = '/checkout';
+                                            window.location.href = '/address';
                                         }
                                     }}
                                     className="flex-1 h-16 rounded-2xl bg-white border-2 border-[#4B3A2F] text-[#4B3A2F] font-black text-lg uppercase tracking-widest hover:bg-[#4B3A2F]/5 transition-all active:scale-[0.98]"

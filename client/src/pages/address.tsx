@@ -260,7 +260,13 @@ export default function AddressPage() {
     // Store address data and checkout type in localStorage
     localStorage.setItem('checkoutAddress', JSON.stringify(finalAddressData));
     localStorage.setItem('checkoutType', isBuyNow ? 'direct' : 'cart');
-    navigate('/checkout');
+    
+    // Check if it's a direct buy flow to potentially skip/redirect
+    if (isBuyNow) {
+      navigate('/checkout');
+    } else {
+      navigate('/checkout');
+    }
   };
 
   const handleEditAddress = (address: any) => {
