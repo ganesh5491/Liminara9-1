@@ -382,12 +382,12 @@ export default function ProductDetailPage() {
             <section className="py-8 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <Tabs defaultValue="description" className="w-full">
-                        <TabsList className="w-full bg-[#FFF4E8] rounded-2xl md:rounded-[2rem] h-14 md:h-20 p-1 md:p-2 gap-1 md:gap-2 overflow-x-auto flex flex-nowrap border border-[#D4B590]/20 shadow-sm scrollbar-hide">
+                        <TabsList className="w-full bg-[#FFF4E8] rounded-2xl md:rounded-[2rem] h-12 md:h-20 p-1 md:p-2 gap-1 md:gap-2 flex border border-[#D4B590]/20 shadow-sm">
                             {["Description", "Specifications", "Care Guide", "Reviews", "Q&A"].map((tab) => (
                                 <TabsTrigger
                                     key={tab}
                                     value={tab.toLowerCase().replace(" ", "").replace("&", "")}
-                                    className="flex-1 min-w-[80px] md:min-w-[100px] rounded-xl md:rounded-2xl h-full data-[state=active]:bg-white data-[state=active]:text-[#3B2D25] data-[state=active]:shadow-md text-[10px] md:text-sm font-bold text-[#4B3A2F]/40 transition-all"
+                                    className="flex-1 rounded-xl md:rounded-2xl h-full data-[state=active]:bg-white data-[state=active]:text-[#3B2D25] data-[state=active]:shadow-md text-[9px] min-[400px]:text-[10px] md:text-sm font-bold text-[#4B3A2F]/40 transition-all px-1"
                                 >
                                     {tab}
                                 </TabsTrigger>
