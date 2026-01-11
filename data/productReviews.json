@@ -68,5 +68,22 @@
     "adminReplyAt": null,
     "createdAt": "2026-01-11T12:38:53.137Z",
     "updatedAt": "2026-01-11T12:38:53.137Z"
+  },
+  {
+    "id": "db405eb1-e50c-4cb8-8c8f-0499ef65afc3",
+    "productId": "cos-004",
+    "userName": "rohan",
+    "rating": 4,
+    "title": "Amezing",
+    "comment": "noce yrr",
+    "status": "approved",
+    "userId": null,
+    "images": null,
+    "isVerified": false,
+    "adminReply": null,
+    "adminReplyBy": null,
+    "adminReplyAt": null,
+    "createdAt": "2026-01-11T12:42:49.277Z",
+    "updatedAt": "2026-01-11T12:42:49.277Z"
   }
 ]
