@@ -117,7 +117,7 @@ export default function ProductDetailPage() {
 
     const averageRating = reviews.length > 0 
         ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
-        : "4.9";
+        : "0";
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(Math.max(1, quantity + delta));
@@ -237,13 +237,13 @@ export default function ProductDetailPage() {
                                         </div>
                                         <span className="text-lg font-black text-[#3B2D25]">{averageRating} out of 5</span>
                                     </div>
-                                    <p className="text-sm text-[#4B3A2F]/60 mb-6">{reviews.length > 0 ? reviews.length : "234"} global ratings</p>
+                                    <p className="text-sm text-[#4B3A2F]/60 mb-6">{reviews.length} global ratings</p>
                                     
                                     <div className="space-y-3">
                                         {[5, 4, 3, 2, 1].map((rating) => {
                                             const count = reviews.filter(r => r.rating === rating).length;
-                                            const total = reviews.length || 234; // Use fallback total if no reviews
-                                            const percentage = reviews.length > 0 ? Math.round((count / total) * 100) : (rating === 5 ? 50 : rating === 4 ? 28 : rating === 2 ? 10 : rating === 1 ? 12 : 0);
+                                            const total = reviews.length;
+                                            const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
                                             
                                             return (
                                                 <div key={rating} className="flex items-center gap-4 group/bar">
@@ -272,7 +272,7 @@ export default function ProductDetailPage() {
                                 </div>
 
                                 <span className="text-sm font-bold text-[#4B3A2F]/60 ml-2">
-                                    {reviews.length > 0 ? reviews.length : "234"} reviews
+                                    {reviews.length} reviews
                                 </span>
                             </div>
 

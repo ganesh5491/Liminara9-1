@@ -51,5 +51,22 @@
     "adminReplyAt": null,
     "createdAt": "2026-01-11T11:55:10.021Z",
     "updatedAt": "2026-01-11T11:55:10.021Z"
+  },
+  {
+    "id": "716966fd-c0ac-4a0b-93b4-4d3bce438d9b",
+    "productId": "cos-001",
+    "userName": "rohan",
+    "rating": 3,
+    "title": "perfect",
+    "comment": "",
+    "status": "approved",
+    "userId": null,
+    "images": null,
+    "isVerified": false,
+    "adminReply": null,
+    "adminReplyBy": null,
+    "adminReplyAt": null,
+    "createdAt": "2026-01-11T12:38:53.137Z",
+    "updatedAt": "2026-01-11T12:38:53.137Z"
   }
 ]
