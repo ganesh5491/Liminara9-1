@@ -84,16 +84,20 @@ export default function Navigation({ onCartClick = () => {}, onWishlistClick = (
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      (isScrolled || !isHomePage) ? "bg-white/80 backdrop-blur-lg shadow-md py-4" : "bg-transparent py-6"
+      (isScrolled || !isHomePage) 
+        ? "bg-white/90 backdrop-blur-md shadow-sm py-3 md:py-4" 
+        : "bg-transparent py-4 md:py-6"
     }`}>
-      <nav className="max-w-7xl mx-auto px-6 md:px-10 flex justify-between items-center">
+      <nav className="max-w-7xl mx-auto px-4 md:px-10 flex justify-between items-center h-full">
 
         {/* -------- LOGO -------- */}
-        <Link to="/" className="flex items-center gap-2 group h-12">
+        <Link to="/" className="flex items-center gap-2 group h-8 md:h-12 relative z-[60]">
           <img
             src="/src/assets/logo.png"
             alt="Liminara Logo"
-            className="h-full w-auto object-contain brightness-0"
+            className={`h-full w-auto object-contain transition-all duration-500 ${
+              (isScrolled || !isHomePage) ? "brightness-0" : "brightness-0 invert md:brightness-0 md:invert-0"
+            }`}
           />
         </Link>
 
@@ -111,48 +115,45 @@ export default function Navigation({ onCartClick = () => {}, onWishlistClick = (
         </div>
 
         {/* -------- ACTION BUTTONS -------- */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2 relative z-[60]">
 
           {/* Wishlist */}
-          <Button variant="ghost" size="icon" onClick={onWishlistClick} className="relative">
-            <Heart className="w-5"/>
-            {wishlistCount>0 && <span className="badge-count">{wishlistCount}</span>}
+          <Button variant="ghost" size="icon" onClick={onWishlistClick} className="relative h-9 w-9 md:h-10 md:w-10">
+            <Heart className="w-4 md:w-5"/>
+            {wishlistCount>0 && <span className="badge-count scale-75 md:scale-100">{wishlistCount}</span>}
           </Button>
 
           {/* Cart */}
-          <Button variant="ghost" size="icon" onClick={onCartClick} className="relative">
-            <ShoppingCart className="w-5"/>
-            {cartCount>0 && <span className="badge-count">{cartCount}</span>}
+          <Button variant="ghost" size="icon" onClick={onCartClick} className="relative h-9 w-9 md:h-10 md:w-10">
+            <ShoppingCart className="w-4 md:w-5"/>
+            {cartCount>0 && <span className="badge-count scale-75 md:scale-100">{cartCount}</span>}
           </Button>
 
           {/* -------- AUTH LOGIC -------- */}
           {!authLoading && (
             user ? (
               <>
-                {/* PROFILE 👇 visible after login */}
                 <Link to="/profile">
-                  <Button variant="ghost" size="icon">
-                    <User className="w-5" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10">
+                    <User className="w-4 md:w-5" />
                   </Button>
                 </Link>
-
-                {/* LOGOUT */}
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
-                  <LogOut className="text-red-600 w-5" />
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-9 w-9 md:h-10 md:w-10">
+                  <LogOut className="text-red-600 w-4 md:w-5" />
                 </Button>
               </>
             ) : (
               <Link to="/login">
-                <Button variant="ghost" size="icon">
-                  <LogIn className="w-5" />
+                <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10">
+                  <LogIn className="w-4 md:w-5" />
                 </Button>
               </Link>
             )
           )}
 
           {/* Mobile Menu Toggle */}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setIsMobileMenu(!isMobileMenu)}>
-            {isMobileMenu ? <X/>:<Menu/>}
+          <Button variant="ghost" size="icon" className="md:hidden h-9 w-9" onClick={()=>setIsMobileMenu(!isMobileMenu)}>
+            {isMobileMenu ? <X className="w-5 h-5"/>:<Menu className="w-5 h-5"/>}
           </Button>
         </div>
       </nav>
