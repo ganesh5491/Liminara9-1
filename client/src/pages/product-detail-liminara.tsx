@@ -17,23 +17,33 @@ import {
     Plus,
     CheckCircle2,
     Sparkles,
+    MessageCircle,
+    HelpCircle,
 } from "lucide-react";
-import type { Product } from "@shared/schema";
+import type { Product, ProductReview, ProductQuestion } from "@shared/schema";
 
 export default function ProductDetailPage() {
     const { id } = useParams();
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
-    const { data: product, isLoading } = useQuery<Product>({
+    const { data: product, isLoading: productLoading } = useQuery<Product>({
         queryKey: [`/api/products/${id}`],
+    });
+
+    const { data: reviews = [], isLoading: reviewsLoading } = useQuery<ProductReview[]>({
+        queryKey: [`/api/products/${id}/reviews`],
+    });
+
+    const { data: questions = [], isLoading: questionsLoading } = useQuery<ProductQuestion[]>({
+        queryKey: [`/api/products/${id}/questions`],
     });
 
     const handleQuantityChange = (delta: number) => {
         setQuantity(Math.max(1, quantity + delta));
     };
 
-    if (isLoading) {
+    if (productLoading) {
         return (
             <div className="min-h-screen bg-[#FFFAF5] flex items-center justify-center">
                 <div className="animate-pulse text-[#4B3A2F] font-display text-2xl">Loading luxury care...</div>
@@ -60,7 +70,6 @@ export default function ProductDetailPage() {
     const hasDiscount = originalPrice > currentPrice;
     const discountText = hasDiscount ? `Save ₹${(originalPrice - currentPrice).toFixed(2)}` : null;
 
-    // Parse specifications if it's a string or object
     const specs = typeof product.specifications === 'string' 
         ? JSON.parse(product.specifications) 
         : product.specifications || {};
@@ -69,7 +78,6 @@ export default function ProductDetailPage() {
 
     return (
         <div className="min-h-screen bg-[#FFFAF5]">
-            {/* Navigation / Header */}
             <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link to="/cosmetics" className="flex items-center gap-2 text-sm font-bold text-[#4B3A2F] hover:opacity-70 transition-opacity">
@@ -89,11 +97,9 @@ export default function ProductDetailPage() {
                 </div>
             </header>
 
-            {/* Section 1: Product Hero */}
             <section className="py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-16 items-start">
-                        {/* Left Column: Images */}
                         <div className="space-y-6">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
@@ -118,12 +124,12 @@ export default function ProductDetailPage() {
                                 </div>
                             </motion.div>
 
-                            <div className="flex gap-4">
+                            <div className="flex gap-4 overflow-x-auto pb-2">
                                 {images.map((img, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(idx)}
-                                        className={`w-24 h-24 rounded-2xl bg-white border-2 transition-all flex items-center justify-center p-4 overflow-hidden shadow-sm ${selectedImage === idx ? "border-[#D4B590] scale-105" : "border-[#E3C7A0]/20 opacity-50 hover:opacity-100"}`}
+                                        className={`w-24 h-24 flex-shrink-0 rounded-2xl bg-white border-2 transition-all flex items-center justify-center p-4 overflow-hidden shadow-sm ${selectedImage === idx ? "border-[#D4B590] scale-105" : "border-[#E3C7A0]/20 opacity-50 hover:opacity-100"}`}
                                     >
                                         <img src={img} alt="" className="w-full h-full object-contain" />
                                     </button>
@@ -131,7 +137,6 @@ export default function ProductDetailPage() {
                             </div>
                         </div>
 
-                        {/* Right Column: Info */}
                         <div className="pt-4">
                             <h1 className="text-5xl font-display font-black text-[#3B2D25] mb-4 leading-tight">
                                 {product.name}
@@ -141,7 +146,7 @@ export default function ProductDetailPage() {
                                     {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-4 w-4 fill-[#D4B590] text-[#D4B590]" />)}
                                 </div>
                                 <span className="text-sm font-bold text-[#4B3A2F]/60">
-                                    (4.9 out of 5 stars) 234 reviews
+                                    (4.9 out of 5 stars) {reviews.length > 0 ? reviews.length : "234"} reviews
                                 </span>
                             </div>
 
@@ -202,16 +207,15 @@ export default function ProductDetailPage() {
                 </div>
             </section>
 
-            {/* Section 2: Tabs */}
             <section className="py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <Tabs defaultValue="description" className="w-full">
-                        <TabsList className="w-full bg-[#FFF4E8] rounded-[2rem] h-20 p-2 gap-4 border border-[#D4B590]/20 shadow-sm">
-                            {["Description", "Specifications", "Care Guide", "Reviews"].map((tab) => (
+                        <TabsList className="w-full bg-[#FFF4E8] rounded-[2rem] h-20 p-2 gap-2 overflow-x-auto flex flex-nowrap border border-[#D4B590]/20 shadow-sm">
+                            {["Description", "Specifications", "Care Guide", "Reviews", "Q&A"].map((tab) => (
                                 <TabsTrigger
                                     key={tab}
-                                    value={tab.toLowerCase().replace(" ", "")}
-                                    className="flex-1 rounded-2xl h-full data-[state=active]:bg-white data-[state=active]:text-[#3B2D25] data-[state=active]:shadow-md text-sm font-bold text-[#4B3A2F]/40 transition-all"
+                                    value={tab.toLowerCase().replace(" ", "").replace("&", "")}
+                                    className="flex-1 min-w-[100px] rounded-2xl h-full data-[state=active]:bg-white data-[state=active]:text-[#3B2D25] data-[state=active]:shadow-md text-xs sm:text-sm font-bold text-[#4B3A2F]/40 transition-all"
                                 >
                                     {tab}
                                 </TabsTrigger>
@@ -220,7 +224,7 @@ export default function ProductDetailPage() {
 
                         <div className="mt-8">
                             <TabsContent value="description">
-                                <Card className="p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                <Card className="p-8 sm:p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
                                     <div className="flex items-center gap-3 mb-8">
                                         <Plus className="h-6 w-6 text-[#D4B590] rotate-45" />
                                         <h2 className="text-3xl font-display font-black text-[#3B2D25]">Product Description</h2>
@@ -246,7 +250,7 @@ export default function ProductDetailPage() {
                                 </Card>
                             </TabsContent>
                             <TabsContent value="specifications">
-                                <Card className="p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                <Card className="p-8 sm:p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         {Object.entries(specs).map(([key, value]) => (
                                             <div key={key} className="border-b border-[#E3C7A0]/20 pb-4">
@@ -258,7 +262,7 @@ export default function ProductDetailPage() {
                                 </Card>
                             </TabsContent>
                             <TabsContent value="careguide">
-                                <Card className="p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                <Card className="p-8 sm:p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
                                     <div className="flex items-center gap-3 mb-8">
                                         <Sparkles className="h-6 w-6 text-[#D4B590]" />
                                         <h2 className="text-3xl font-display font-black text-[#3B2D25]">Care & Usage</h2>
@@ -268,12 +272,69 @@ export default function ProductDetailPage() {
                                     </p>
                                 </Card>
                             </TabsContent>
+                            <TabsContent value="reviews">
+                                <Card className="p-8 sm:p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div className="flex items-center gap-3">
+                                            <MessageCircle className="h-6 w-6 text-[#D4B590]" />
+                                            <h2 className="text-3xl font-display font-black text-[#3B2D25]">Customer Reviews</h2>
+                                        </div>
+                                        <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Write Review</Button>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {reviews.length > 0 ? reviews.map((review) => (
+                                            <div key={review.id} className="border-b border-[#E3C7A0]/10 pb-8 last:border-0">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <p className="font-bold text-[#3B2D25]">{review.userName}</p>
+                                                    <p className="text-xs text-[#4B3A2F]/40">{new Date(review.createdAt || "").toLocaleDateString()}</p>
+                                                </div>
+                                                <div className="flex gap-0.5 mb-3">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-[#D4B590] text-[#D4B590]" : "text-[#E3C7A0]/30"}`} />
+                                                    ))}
+                                                </div>
+                                                <p className="text-[#4B3A2F]/80 font-medium leading-relaxed">{review.comment}</p>
+                                            </div>
+                                        )) : (
+                                            <p className="text-[#4B3A2F]/60 text-center py-12">No reviews yet for this product.</p>
+                                        )}
+                                    </div>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="qa">
+                                <Card className="p-8 sm:p-12 rounded-[3rem] bg-white shadow-soft border border-[#E3C7A0]/20">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div className="flex items-center gap-3">
+                                            <HelpCircle className="h-6 w-6 text-[#D4B590]" />
+                                            <h2 className="text-3xl font-display font-black text-[#3B2D25]">Product Q&A</h2>
+                                        </div>
+                                        <Button className="bg-[#4B3A2F] text-[#F5D7B0] rounded-full px-6">Ask Question</Button>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {questions.length > 0 ? questions.map((q) => (
+                                            <div key={q.id} className="space-y-4 p-6 rounded-2xl bg-[#FFF4E8]/50 border border-[#E3C7A0]/10">
+                                                <div className="flex gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-[#4B3A2F] text-[#F5D7B0] flex items-center justify-center font-black text-xs flex-shrink-0">Q</div>
+                                                    <p className="font-bold text-[#3B2D25]">{q.question}</p>
+                                                </div>
+                                                {q.answer && (
+                                                    <div className="flex gap-3 pl-4 border-l-2 border-[#D4B590]/30">
+                                                        <div className="w-8 h-8 rounded-full bg-[#D4B590] text-white flex items-center justify-center font-black text-xs flex-shrink-0">A</div>
+                                                        <p className="text-[#4B3A2F]/80 font-medium">{q.answer}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )) : (
+                                            <p className="text-[#4B3A2F]/60 text-center py-12">No questions asked yet.</p>
+                                        )}
+                                    </div>
+                                </Card>
+                            </TabsContent>
                         </div>
                     </Tabs>
                 </div>
             </section>
 
-            {/* You Might Also Like */}
             <section className="py-24 bg-[#FFF4E8]/30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-4xl font-display font-black text-[#3B2D25] mb-12">Related Products</h2>
