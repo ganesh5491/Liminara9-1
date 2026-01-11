@@ -710,6 +710,16 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
                 >
                   Buy Now
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedProduct(null);
+                    navigate(`/product-liminara/${product.id}`);
+                  }}
+                  className="flex-1 h-16 rounded-2xl border-2 border-[#8B7355] text-[#8B7355] font-black text-lg uppercase tracking-widest hover:bg-[#8B7355]/5 transition-all min-w-[140px]"
+                >
+                  View Details
+                </Button>
               </div>
             </div>
           </div>
@@ -881,7 +891,7 @@ export default function CosmeticsProducts() {
                             />
                             <div className="absolute top-4 left-4">
                               <Badge className="bg-white/90 backdrop-blur-md text-espresso border-none font-bold text-[10px] tracking-widest px-3 py-1.5 shadow-sm">
-                                {product.subcategory}
+                                {product.subcategoryId}
                               </Badge>
                             </div>
                             <button 
@@ -904,7 +914,7 @@ export default function CosmeticsProducts() {
                                 <span className="text-xl font-bold text-espresso ml-2">₹{product.price}</span>
                               </div>
                               <p className="text-sm text-espresso/60 line-clamp-2 font-medium leading-relaxed">
-                                {product.shortDescription || product.description}
+                                {product.description}
                               </p>
                             </div>
 
