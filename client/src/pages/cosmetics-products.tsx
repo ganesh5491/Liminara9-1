@@ -107,7 +107,7 @@ function SkinFinderQuiz({ onComplete }: { onComplete: (filters: any) => void }) 
   const Icon = questions[step]?.icon || Sparkles;
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-6 w-full p-8 rounded-[2rem] bg-white shadow-soft border border-[#E3C7A0]/20">
       <AnimatePresence mode="wait">
         {step < questions.length ? (
           <motion.div
