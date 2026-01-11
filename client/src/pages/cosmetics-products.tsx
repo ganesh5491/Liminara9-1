@@ -746,6 +746,36 @@ export default function CosmeticsProducts() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Filter products locally from the imported JSON
+  const toggleWishlist = (product: any) => {
+    const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
+    const existingIndex = localWishlist.findIndex((item: any) => item.id === product.id || item.productId === product.id);
+
+    if (existingIndex !== -1) {
+      localWishlist.splice(existingIndex, 1);
+      localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
+      toast({ title: "Removed from Wishlist", description: `${product.name} removed from your favorites.` });
+    } else {
+      localWishlist.push({
+        id: product.id,
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        product: product
+      });
+      localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
+      toast({ title: "Added to Wishlist!", description: `${product.name} added to your favorites.` });
+    }
+    window.dispatchEvent(new Event('localWishlistUpdate'));
+    // Force re-render of the product grid
+    queryClient.invalidateQueries({ queryKey: ["localWishlist"] });
+  };
+
+  const isInWishlist = (productId: string) => {
+    const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
+    return localWishlist.some((item: any) => item.id === productId || item.productId === productId);
+  };
+
   const filteredProducts = useMemo(() => {
     return productsData.filter((product: any) => {
       if (product.category !== "cosmetic") return false;

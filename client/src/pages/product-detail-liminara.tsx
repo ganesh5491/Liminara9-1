@@ -123,6 +123,54 @@ export default function ProductDetailPage() {
         setQuantity(Math.max(1, quantity + delta));
     };
 
+    const toggleWishlist = () => {
+        if (!product) return;
+        const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
+        const existingIndex = localWishlist.findIndex((item: any) => String(item.id) === String(product.id) || String(item.productId) === String(product.id));
+        
+        if (existingIndex !== -1) {
+            localWishlist.splice(existingIndex, 1);
+            localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
+            toast({ title: "Removed from Wishlist", description: `${product.name} removed from your favorites.` });
+        } else {
+            localWishlist.push({
+                id: product.id,
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                imageUrl: product.imageUrl,
+                product: product
+            });
+            localStorage.setItem('localWishlist', JSON.stringify(localWishlist));
+            toast({ title: "Added to Wishlist!", description: `${product.name} added to your favorites.` });
+        }
+        window.dispatchEvent(new Event('localWishlistUpdate'));
+    };
+
+    const isInWishlist = () => {
+        if (!product) return false;
+        const localWishlist = JSON.parse(localStorage.getItem('localWishlist') || '[]');
+        return localWishlist.some((item: any) => String(item.id) === String(product.id) || String(item.productId) === String(product.id));
+    };
+
+    const onCartClick = () => {
+        const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+        const existingItemIndex = localCart.findIndex((item: any) => item.productId === product?.id);
+        if (existingItemIndex !== -1) {
+            localCart[existingItemIndex].quantity += quantity;
+        } else if (product) {
+            localCart.push({
+                id: `local-${product.id}-${Date.now()}`,
+                productId: product.id,
+                quantity: quantity,
+                product: product
+            });
+        }
+        localStorage.setItem('localCart', JSON.stringify(localCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+        toast({ title: "Added to Cart!", description: `${product?.name} added to cart.` });
+    };
+
     if (productLoading) {
         return (
             <div className="min-h-screen bg-[#FFFAF5] flex items-center justify-center">
@@ -172,8 +220,13 @@ export default function ProductDetailPage() {
                     <Link to="/cosmetics" className="hover:text-[#4B3A2F]">Collection</Link>
                 </div>
                 <div className="flex items-center gap-6">
-                    <button className="text-[#4B3A2F] hover:opacity-70"><Heart className="h-5 w-5" /></button>
-                    <button className="text-[#4B3A2F] hover:opacity-70"><ShoppingCart className="h-5 w-5" /></button>
+                    <button 
+                        onClick={toggleWishlist}
+                        className={`transition-colors ${isInWishlist() ? "text-red-500 fill-red-500" : "text-[#4B3A2F] hover:opacity-70"}`}
+                    >
+                        <Heart className={`h-5 w-5 ${isInWishlist() ? "fill-current" : ""}`} />
+                    </button>
+                    <button onClick={onCartClick} className="text-[#4B3A2F] hover:opacity-70"><ShoppingCart className="h-5 w-5" /></button>
                 </div>
             </header>
 
