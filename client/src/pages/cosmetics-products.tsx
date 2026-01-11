@@ -733,6 +733,7 @@ function ProductDetailModal({ product, isOpen, onClose }: { product: any; isOpen
    Cosmetics Products Main
 ------------------------------------ */
 export default function CosmeticsProducts() {
+  const navigate = useNavigate();
   const [selectedFilters, setSelectedFilters] = useState<any>({
     concerns: [],
     skinType: "",
@@ -859,77 +860,78 @@ export default function CosmeticsProducts() {
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
                 >
                   {filteredProducts.map((product, idx) => (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      onClick={() => setSelectedProduct(product)}
-                      className="cursor-pointer group"
-                    >
-                      <InteractiveCard
-                        InteractiveColor="hsl(38 55% 70%)"
-                        tailwindBgClass="bg-white"
-                        className="h-full border-none shadow-soft hover:shadow-xl transition-all duration-500 overflow-hidden"
-                        borderRadius="24px"
-                        rotationFactor={0.15}
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        onClick={() => navigate(`/product-liminara/${product.id}`)}
+                        className="cursor-pointer group"
                       >
-                        <div className="flex flex-col h-full">
-                          {/* Image */}
-                          <div className="relative aspect-[4/5] bg-cream overflow-hidden">
-                            <motion.img
-                              whileHover={{ scale: 1.1, rotate: 1 }}
-                              transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-                              src={product.imageUrl || product.images?.[0]}
-                              alt={product.name}
-                              className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-105"
-                            />
-                            <motion.div 
-                              initial={{ opacity: 0 }}
-                              whileHover={{ opacity: 1 }}
-                              className="absolute inset-0 bg-espresso/5 pointer-events-none transition-opacity duration-500"
-                            />
-                            <div className="absolute top-4 left-4">
-                              <Badge className="bg-white/90 backdrop-blur-md text-espresso border-none font-bold text-[10px] tracking-widest px-3 py-1.5 shadow-sm">
-                                {product.subcategoryId}
-                              </Badge>
-                            </div>
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                              className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-espresso hover:text-rose-500 transition-colors shadow-sm"
-                            >
-                              <Heart className="h-5 w-5" />
-                            </button>
-                          </div>
-
-                          {/* Content */}
-                          <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xl font-display font-bold text-espresso leading-tight group-hover:text-gold-dark transition-colors line-clamp-2">
-                                  {product.name}
-                                </h3>
-                                <span className="text-xl font-bold text-espresso ml-2">₹{product.price}</span>
+                        <InteractiveCard
+                          InteractiveColor="hsl(38 55% 70%)"
+                          tailwindBgClass="bg-white"
+                          className="h-full border-none shadow-soft hover:shadow-xl transition-all duration-500 overflow-hidden"
+                          borderRadius="24px"
+                          rotationFactor={0.15}
+                        >
+                          <div className="flex flex-col h-full">
+                            {/* Image */}
+                            <div className="relative aspect-[4/5] bg-cream overflow-hidden">
+                              <motion.img
+                                whileHover={{ scale: 1.1, rotate: 1 }}
+                                transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+                                src={product.imageUrl || product.images?.[0]}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-105"
+                              />
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                whileHover={{ opacity: 1 }}
+                                className="absolute inset-0 bg-espresso/5 pointer-events-none transition-opacity duration-500"
+                              />
+                              <div className="absolute top-4 left-4">
+                                <Badge className="bg-white/90 backdrop-blur-md text-espresso border-none font-bold text-[10px] tracking-widest px-3 py-1.5 shadow-sm">
+                                  {product.subcategoryId}
+                                </Badge>
                               </div>
-                              <p className="text-sm text-espresso/60 line-clamp-2 font-medium leading-relaxed">
-                                {product.description}
-                              </p>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Add like functionality here if needed
+                                }}
+                                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-espresso hover:text-rose-500 transition-colors shadow-sm"
+                              >
+                                <Heart className="h-5 w-5" />
+                              </button>
                             </div>
 
-                            <div className="pt-4 flex items-center justify-between border-t border-cream-dark/50">
-                              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-gold-dark">
-                                View Details
-                              </span>
-                              <div className="h-10 w-10 rounded-full bg-cream flex items-center justify-center group-hover:bg-gold transition-colors duration-300">
-                                <ArrowRight className="h-5 w-5 text-espresso group-hover:text-white transition-colors" />
+                            {/* Content */}
+                            <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                              <div>
+                                <div className="flex justify-between items-start mb-2">
+                                  <h3 className="text-xl font-display font-bold text-espresso leading-tight group-hover:text-gold-dark transition-colors line-clamp-2">
+                                    {product.name}
+                                  </h3>
+                                  <span className="text-xl font-bold text-espresso ml-2">₹{product.price}</span>
+                                </div>
+                                <p className="text-sm text-espresso/60 line-clamp-2 font-medium leading-relaxed">
+                                  {product.description}
+                                </p>
+                              </div>
+
+                              <div className="pt-4 flex items-center justify-between border-t border-cream-dark/50">
+                                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-gold-dark">
+                                  View Details
+                                </span>
+                                <div className="h-10 w-10 rounded-full bg-cream flex items-center justify-center group-hover:bg-gold transition-colors duration-300">
+                                  <ArrowRight className="h-5 w-5 text-espresso group-hover:text-white transition-colors" />
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </InteractiveCard>
-                    </motion.div>
+                        </InteractiveCard>
+                      </motion.div>
                   ))}
                 </motion.div>
               ) : (
