@@ -46,7 +46,7 @@ export default function FeaturedCollection() {
           className="absolute inset-0"
         >
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-no-repeat bg-contain bg-center opacity-30"
             style={{ backgroundImage: `url(${activeProduct.image})` }}
           />
           <div className="absolute inset-0 bg-[#FBF8F5]/50 backdrop-blur-sm" />

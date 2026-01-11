@@ -34,5 +34,22 @@
     "isVerified": false,
     "createdAt": "2025-12-01T15:51:18.542Z",
     "updatedAt": "2025-12-01T15:51:18.542Z"
+  },
+  {
+    "id": "421ff24c-41bd-41c0-9440-ffbc1d6a8900",
+    "productId": "cos-002",
+    "userName": "rohan",
+    "rating": 5,
+    "title": "Amezing ",
+    "comment": "nice product",
+    "status": "approved",
+    "userId": null,
+    "images": null,
+    "isVerified": false,
+    "adminReply": null,
+    "adminReplyBy": null,
+    "adminReplyAt": null,
+    "createdAt": "2026-01-11T11:55:10.021Z",
+    "updatedAt": "2026-01-11T11:55:10.021Z"
   }
 ]

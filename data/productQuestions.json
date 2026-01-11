@@ -26,5 +26,35 @@
     "isPublic": true,
     "createdAt": "2025-11-28T19:06:38.083Z",
     "updatedAt": "2025-11-28T19:06:54.619Z"
+  },
+  {
+    "id": "038aa5f2-6b55-40af-b6ab-93ac599a6f44",
+    "productId": "cos-002",
+    "userName": "Ganesh r kale",
+    "question": "whats special",
+    "status": "pending",
+    "userId": null,
+    "userEmail": null,
+    "answer": null,
+    "answeredBy": null,
+    "answeredAt": null,
+    "isPublic": true,
+    "createdAt": "2026-01-11T11:55:38.417Z",
+    "updatedAt": "2026-01-11T11:55:38.417Z"
+  },
+  {
+    "id": "14ac6403-6397-4d43-837c-c5627f7ed86d",
+    "productId": "cos-003",
+    "userName": "rohan",
+    "question": "how many times should i use this",
+    "status": "pending",
+    "userId": null,
+    "userEmail": null,
+    "answer": null,
+    "answeredBy": null,
+    "answeredAt": null,
+    "isPublic": true,
+    "createdAt": "2026-01-11T11:56:23.601Z",
+    "updatedAt": "2026-01-11T11:56:23.601Z"
   }
 ]
