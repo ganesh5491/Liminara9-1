@@ -86,7 +86,7 @@ const Hero = () => {
 
                             {/* BACKGROUND IMAGE WITH PARALLAX ZOOM */}
                             <div
-                                className="absolute inset-0 bg-cover bg-center will-change-transform
+                                className="absolute inset-0 bg-cover bg-[85%_center] sm:bg-center will-change-transform
                                 transition-transform [transition-duration:3000ms] ease-out"
                                 style={{
                                     backgroundImage: `url(${slide.image})`,
@@ -95,7 +95,7 @@ const Hero = () => {
                             />
 
                             {/* WHITE GLASS OVERLAY — same for all slides */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/35 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/40 to-transparent md:from-white/55 md:via-white/35" />
                         </div>
                     ))}
                 </div>

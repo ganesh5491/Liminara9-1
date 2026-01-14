@@ -246,5 +246,21 @@
     "quantity": 1,
     "price": "2499",
     "createdAt": "2026-01-11T12:28:31.795Z"
+  },
+  {
+    "id": "74c6b48e-9c95-4ec8-9e2c-cfc43d953d5b",
+    "orderId": "314148f0-3d90-4e79-a8c3-673635f6ceb3",
+    "productId": "cos-004",
+    "quantity": 1,
+    "price": "1299",
+    "createdAt": "2026-01-14T17:27:32.352Z"
+  },
+  {
+    "id": "77eaaef1-0b30-4ef4-b5c7-b9864a9c1f00",
+    "orderId": "57eb83fb-4c60-4fc1-b7d9-f97b4817905f",
+    "productId": "cos-004",
+    "quantity": 1,
+    "price": "1299",
+    "createdAt": "2026-01-14T17:28:41.291Z"
   }
 ]

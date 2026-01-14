@@ -40,7 +40,7 @@ import CheckoutPage from "@/pages/checkout";
 import Testimonials from "@/pages/Testimonials";
 import WhyChooseUs from "@/pages/WhyChooseUs"
 import FeaturedCollection from "@/pages/FeaturedCollection"
-
+import FestiveCarousel from "@/pages/FestiveCarousel"
 // Liminara Pages
 import LiminaraHome from "@/pages/liminara-home";
 import PharmaProducts from "@/pages/pharma-products";
@@ -146,6 +146,7 @@ function MainAppContent() {
           <Route path="why-choose-us" element={<WhyChooseUs />} />
           <Route path="featured-collection" element={<FeaturedCollection />} />
           <Route path="future-of-care" element={<FutureOfCare />} />
+          <Route path="festive-carousel" element={<FestiveCarousel />} />
           {/* Auth Routes */}
           <Route path="auth" element={<Login />} />
           <Route path="login" element={<Login />} />
